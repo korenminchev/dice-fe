@@ -73,6 +73,9 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
+  assets:
+    - assets/images/dice_logo.png
+
   fonts:
     - family: Lato
       fonts:
@@ -86,6 +89,10 @@ flutter:
           weight: 300
         - asset: assets/fonts/Lato-Thin.ttf
           weight: 100
+
+    - family: Hurricane
+      fonts:
+        - asset: assets/fonts/Hurricane-Regular.ttf
         
 
   # To add custom fonts to your application, add a fonts section here,
