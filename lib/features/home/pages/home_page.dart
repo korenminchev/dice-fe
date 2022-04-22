@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/drawer/dice_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: DiceDrawer(),
       appBar: AppBar(
         title: Text('Home'),
       ),
