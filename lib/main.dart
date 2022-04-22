@@ -7,7 +7,7 @@ void main() {
 }
 
 class DiceApp extends StatelessWidget {
-  const DiceApp() : super();
+  const DiceApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class DiceApp extends StatelessWidget {
       ),
       initialRoute: HomePage.routeName,
       routes: {
-        HomePage.routeName: (context) => HomePage(),
+        HomePage.routeName: (context) => const HomePage(),
       },
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,

@@ -8,7 +8,7 @@ class DiceDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       child: Drawer(
         child: ListView(

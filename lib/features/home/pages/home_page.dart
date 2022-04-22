@@ -1,4 +1,3 @@
-import 'package:dice_fe/core/app_bar_title.dart';
 import 'package:dice_fe/core/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,7 @@ import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage();
+  const HomePage({Key? key}) : super(key: key);
 
   static String routeName = '/';
 
