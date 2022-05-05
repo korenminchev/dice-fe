@@ -4,6 +4,7 @@ import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/core/widgets/text_field.dart';
 import 'package:dice_fe/features/join/app/bloc/join_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class JoinPage extends StatelessWidget {
@@ -39,7 +40,13 @@ class JoinPage extends StatelessWidget {
                 "Join Game",
                 style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700)),
               const SizedBox(height: 40),
-              const DiceTextField(),
+              DiceTextField(
+                textAlign: TextAlign.center,
+                textInputFormatters: [
+                  LengthLimitingTextInputFormatter(4),
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                ],
+              ),
               const SizedBox(height: 40),
               PrimaryButton(
                 text: "Join Game",
