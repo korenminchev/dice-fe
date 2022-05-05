@@ -14,3 +14,11 @@ class InvalidName extends CreateUserState {}
 class ValidName extends CreateUserState {
   const ValidName() : super(nameValid: true);
 }
+
+class CreateUserLoading extends CreateUserState {}
+
+class CreateUserFailure extends CreateUserState {
+  const CreateUserFailure() : super(nameValid: true);
+}
+
+class UserCreated extends CreateUserState {}

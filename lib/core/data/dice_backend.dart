@@ -39,7 +39,12 @@ class DiceBackend {
 
   Future<Either<ServerFailure, Map<String, dynamic>>> _post(String url,
       {Map<String, String>? body}) async {
-    final response = await http.post(Uri.parse('$serverUrl/$url'), body: body);
+    final response = await http.post(
+      Uri.parse('$serverUrl/$url'),
+      body: body,
+      headers: {
+        "Access-Control-Allow-Origin": "Access-Control-Allow-Origin, Accept",
+        "Accept": "application/json",});
     Map<String, dynamic>? jsonBody = json.decode(response.body);
     if (response.statusCode == 200) {
       return Right(jsonBody ?? {});

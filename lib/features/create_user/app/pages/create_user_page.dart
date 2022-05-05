@@ -1,8 +1,9 @@
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/core/widgets/text_field.dart';
-import 'package:dice_fe/features/create_user/bloc/createuser_bloc.dart';
-import 'package:dice_fe/features/join/app/bloc/join_bloc.dart';
+import 'package:dice_fe/features/create_user/app/bloc/createuser_bloc.dart';
+import 'package:dice_fe/features/create_user/domain/user_createtion_repository.dart';
+import 'package:dice_fe/features/home/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +20,9 @@ class CreateUserPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: BlocProvider(
-          create: (context) => CreateUserBloc(),
+          create: (context) => CreateUserBloc(
+            serviceLocator<UserCreationRepository>()
+          ),
           child: buildCreateUserPage(context),
         ),
       ),
@@ -30,8 +33,24 @@ class CreateUserPage extends StatelessWidget {
     TextEditingController nameController = TextEditingController();
 
     return BlocConsumer<CreateUserBloc, CreateUserState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is UserCreated) {
+          Navigator.pop(context);
+        }
+        if (state is CreateUserFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Error creating user"),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
+        if (state is CreateUserLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         return Center(
           child: Column(
             children: [
