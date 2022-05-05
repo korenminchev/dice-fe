@@ -1,6 +1,8 @@
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
+import 'package:dice_fe/features/home/domain/home_repository.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
+import 'package:dice_fe/features/join/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +19,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(),
       body: SafeArea(
         child: BlocProvider(
-          create: (context) => HomeBloc(),
+          create: (context) => HomeBloc(serviceLocator<HomeRepository>()),
           child: buildHomePage(context),
         ),
       ),
@@ -27,7 +29,12 @@ class HomePage extends StatelessWidget {
   Widget buildHomePage(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(listener: ((context, state) {
       if (state is NavigateJoinGame) {
-        Navigator.of(context).pushNamed(JoinPage.routeName);
+        if (state.isUserLoggedIn) {
+          Navigator.of(context).pushNamed(JoinPage.routeName);
+        } else {
+          // Navigator.of(context).pushNamed(LoginPage.routeName);
+          print("Name screen");
+        }
       } else if (state is NavigateCreateGame) {
         // Navigator.of(context).pushNamed('/create');
       } else if (state is NavigateGameRules) {

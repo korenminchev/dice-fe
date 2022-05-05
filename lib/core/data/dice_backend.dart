@@ -17,11 +17,12 @@ class ServerFailure extends Failure {
 }
 
 class DiceBackend {
-  final String serverUrl = 'http://45.83.40.121:8080';
+  final String serverUrl = 'http://dice-be.shust.in/';
   WebSocketChannel? _gameChannel;
-  String? _userId;
+  late String _userId;
 
   Future<Either<ServerFailure, http.Response>> _get(String url) async {
+    print('GET: $url');
     final response = await http.get(
       Uri.parse('$serverUrl/$url'),
       headers: {
@@ -49,6 +50,10 @@ class DiceBackend {
   Future<Either<Failure, Stream>> join(String roomCode) async {
     _gameChannel = WebSocketChannel.connect(Uri.parse('$serverUrl/games/ws/$roomCode'));
     return Right(_gameChannel!.stream);
+  }
+
+  void init(String userId) {
+    _userId = userId;
   }
 
   Future<Either<ServerFailure, DiceUser>> createUser(String username) async {
