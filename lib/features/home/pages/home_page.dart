@@ -1,5 +1,5 @@
-import 'package:dice_fe/core/drawer/dice_drawer.dart';
-import 'package:dice_fe/core/primary_button.dart';
+import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
+import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Text(
-                      "Game rules >",
+                      "Game rules",
                       style: TextStyle(
                         fontSize: 20,
                       ),

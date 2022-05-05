@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
-import 'package:dice_fe/core/failure.dart';
+import 'package:dice_fe/core/domain/failure.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 

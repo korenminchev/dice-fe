@@ -29,7 +29,9 @@ class DiceApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        fontFamily: "Lato"
+        fontFamily: "Lato",
+        splashFactory: NoSplash.splashFactory,
+        splashColor: Colors.transparent
       ),
     );
   }

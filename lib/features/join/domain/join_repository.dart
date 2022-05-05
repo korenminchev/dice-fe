@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dice_fe/core/failure.dart';
+import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/features/join/domain/room_info.dart';
 
 abstract class JoinRepository {

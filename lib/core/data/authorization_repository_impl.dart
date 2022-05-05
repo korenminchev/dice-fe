@@ -5,7 +5,7 @@ import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
 import 'package:dice_fe/core/domain/authorization_repository.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
-import 'package:dice_fe/core/failure.dart';
+import 'package:dice_fe/core/domain/failure.dart';
 
 class NoUserId extends Failure{}
 
