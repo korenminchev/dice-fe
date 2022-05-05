@@ -12,15 +12,16 @@ class PrimaryButton extends StatelessWidget {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(AppUI.primaryColor),
         splashFactory: NoSplash.splashFactory,
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          )
+        )
       ),
       onPressed: onTap,
-      child: Container(
+      child: SizedBox(
         width: 288,
         height: 56,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
         child: Center(
           child: Text(
             text,

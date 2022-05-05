@@ -9,6 +9,4 @@ abstract class JoinRepository {
 
 class JoinFailure extends Failure{}
 
-class RoomDoesntExist extends JoinFailure {}
-class GameInProgress extends JoinFailure {}
 class RoomCodeInvalid extends JoinFailure {}
