@@ -1,9 +1,11 @@
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
+import 'package:dice_fe/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
+  init();
   runApp(const DiceApp());
 }
 

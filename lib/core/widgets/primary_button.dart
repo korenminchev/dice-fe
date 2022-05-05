@@ -2,15 +2,19 @@ import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final void Function() onTap;
+  final void Function()? onTap;
   final String text;
-  const PrimaryButton({required this.text, required this.onTap, Key? key}) : super(key: key);
+  const PrimaryButton(
+    {required this.text,
+    required this.onTap,
+    Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(AppUI.primaryColor),
+        backgroundColor: MaterialStateProperty.all<Color>(
+          onTap != null ? AppUI.primaryColor : AppUI.lightGrayColor,),
         splashFactory: NoSplash.splashFactory,
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(

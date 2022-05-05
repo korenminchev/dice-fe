@@ -3,6 +3,8 @@ import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/core/widgets/text_field.dart';
 import 'package:dice_fe/features/join/app/bloc/join_bloc.dart';
+import 'package:dice_fe/features/join/domain/join_repository.dart';
+import 'package:dice_fe/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +23,7 @@ class JoinPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: BlocProvider(
-          create: (context) => JoinBloc(),
+          create: (context) => JoinBloc(serviceLocator<JoinRepository>()),
           child: buildJoinPage(context),
         ),
       ),
@@ -29,6 +31,7 @@ class JoinPage extends StatelessWidget {
   }
 
   Widget buildJoinPage(BuildContext context) {
+    TextEditingController _joinRoomCodeController = TextEditingController();
     return BlocConsumer<JoinBloc, JoinState>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -46,11 +49,18 @@ class JoinPage extends StatelessWidget {
                   LengthLimitingTextInputFormatter(4),
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
                 ],
+                controller: _joinRoomCodeController,
+                onChanged: (roomCode) {
+                  BlocProvider.of<JoinBloc>(context).add(TypingEvent(roomCode));
+                }
               ),
               const SizedBox(height: 40),
               PrimaryButton(
                 text: "Join Game",
-                onTap: () {print("Pressed");}
+                onTap: state.joinAllowed 
+                  ? () => BlocProvider.of<JoinBloc>(context).add(
+                    JoinRequestEvent(_joinRoomCodeController.text)) 
+                  : null,
               ),
               const SizedBox(height: 40),
               const Text(

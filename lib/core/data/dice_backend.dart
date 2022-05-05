@@ -10,7 +10,7 @@ class ServerFailure extends Failure {
   final int statusCode;
   final String message;
 
-  ServerFailure(this.message, this.statusCode);
+  ServerFailure(this.statusCode, this.message);
 
   @override
   String toString() => message;
@@ -22,8 +22,18 @@ class DiceBackend {
   String? _userId;
 
   Future<Either<ServerFailure, http.Response>> _get(String url) async {
-    final response = await http.get(Uri.parse('$serverUrl/$url'));
-    return Right(response);
+    final response = await http.get(
+      Uri.parse('$serverUrl/$url'),
+      headers: {
+        "Access-Control-Allow-Origin": "Access-Control-Allow-Origin, Accept",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      });
+    if (response.statusCode == 200) {
+      return Right(response);
+    } else {
+      return Left(ServerFailure(response.statusCode, response.body));
+    }
   }
 
   Future<Either<ServerFailure, Map<String, dynamic>>> _post(String url,
@@ -33,7 +43,7 @@ class DiceBackend {
     if (response.statusCode == 200) {
       return Right(jsonBody ?? {});
     }
-    return Left(ServerFailure(jsonBody?["message"] ?? "", response.statusCode));
+    return Left(ServerFailure(response.statusCode, jsonBody?["message"] ?? ""));
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
@@ -49,6 +59,16 @@ class DiceBackend {
         _userId = response['id'];
         return Right(DiceUser.fromJson(response));
       },
+    );
+  }
+
+  Future<Either<ServerFailure, bool>> isRoomCodeJoinable(String roomCode) async {
+    final response = await _get("games/$roomCode/state");
+    return response.fold(
+      (failure) => Left(failure),
+      (response) {
+        return Right(response.body == "lobby");
+      }
     );
   }
 }
