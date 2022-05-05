@@ -7,12 +7,14 @@ class DiceTextField extends StatelessWidget {
   final List<TextInputFormatter>? textInputFormatters;
   final TextEditingController? controller;
   final Function(String)? onChanged;
+  final String? hintText;
   const DiceTextField({
     Key? key,
-    this.textAlign = TextAlign.start,
+    this.textAlign = TextAlign.center,
     this.textInputFormatters,
     this.controller,
     this.onChanged,
+    this.hintText,
   }) : super(key: key);
 
   @override
@@ -25,14 +27,14 @@ class DiceTextField extends StatelessWidget {
         controller: controller,
         textAlign: textAlign,
         inputFormatters: textInputFormatters,
-        decoration: const InputDecoration(
-          enabledBorder: OutlineInputBorder(
+        decoration: InputDecoration(
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: AppUI.lightGrayColor, width: 1)
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: AppUI.lightGrayColor, width: 2)
           ),
-          hintText: "Room code..."
+          hintText: hintText,
         )
       ),
     );

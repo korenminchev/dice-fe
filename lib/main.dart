@@ -1,3 +1,4 @@
+import 'package:dice_fe/features/create_user/pages/create_user_page.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
 import 'package:dice_fe/injection_container.dart';
@@ -27,7 +28,8 @@ class DiceApp extends StatelessWidget {
       initialRoute: HomePage.routeName,
       routes: {
         HomePage.routeName: (context) => const HomePage(),
-        JoinPage.routeName: ((context) => const JoinPage())
+        JoinPage.routeName: (context) => const JoinPage(),
+        CreateUserPage.routeName: (context) => const CreateUserPage(),
       },
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
