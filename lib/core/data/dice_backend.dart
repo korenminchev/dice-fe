@@ -17,7 +17,7 @@ class ServerFailure extends Failure {
 }
 
 class DiceBackend {
-  final String serverUrl = 'http://dice-be.shust.in/';
+  final String serverUrl = 'http://dice-be.shust.in';
   WebSocketChannel? _gameChannel;
   late String _userId;
 
@@ -33,22 +33,27 @@ class DiceBackend {
     if (response.statusCode == 200) {
       return Right(response);
     } else {
+      print("RESPONSE: ${response.statusCode}");
+      print(response.body);
       return Left(ServerFailure(response.statusCode, response.body));
     }
   }
 
   Future<Either<ServerFailure, Map<String, dynamic>>> _post(String url,
       {Map<String, String>? body}) async {
+    print('POST: $url');
+    print(json.encode(body));
     final response = await http.post(
       Uri.parse('$serverUrl/$url'),
-      body: body,
-      headers: {
-        "Access-Control-Allow-Origin": "Access-Control-Allow-Origin, Accept",
-        "Accept": "application/json",});
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(body)
+    );
     Map<String, dynamic>? jsonBody = json.decode(response.body);
     if (response.statusCode == 200) {
       return Right(jsonBody ?? {});
     }
+    print("RESPONSE: ${response.statusCode}");
+    print(response.body);
     return Left(ServerFailure(response.statusCode, jsonBody?["message"] ?? ""));
   }
 
@@ -62,7 +67,7 @@ class DiceBackend {
   }
 
   Future<Either<ServerFailure, DiceUser>> createUser(String username) async {
-    final response = await _post("users", body: {'name': username});
+    final response = await _post("users/", body: {"name": username});
     return response.fold(
       (failure) => Left(failure),
       (response) {

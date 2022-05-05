@@ -31,10 +31,13 @@ class HomePage extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: ((context, state) async {
         if (state is NavigateJoinGame) {
+          var success;
           if (!state.isUserLoggedIn) {
-            await Navigator.of(context).pushNamed(CreateUserPage.routeName);
+            success = await Navigator.pushNamed(context, CreateUserPage.routeName);
           }
-          Navigator.of(context).pushNamed(JoinPage.routeName);
+          if (success != null && success == true) {
+            Navigator.of(context).pushNamed(JoinPage.routeName);
+          }
         } else if (state is NavigateCreateGame) {
           // Navigator.of(context).pushNamed('/create');
         } else if (state is NavigateGameRules) {

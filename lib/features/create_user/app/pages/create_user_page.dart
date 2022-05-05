@@ -35,7 +35,7 @@ class CreateUserPage extends StatelessWidget {
     return BlocConsumer<CreateUserBloc, CreateUserState>(
       listener: (context, state) {
         if (state is UserCreated) {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
         if (state is CreateUserFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
