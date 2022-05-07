@@ -82,7 +82,7 @@ class DiceBackend {
     return response.fold(
       (failure) => Left(failure),
       (response) {
-        return Right(response.body == "lobby");
+        return Right(json.decode(response.body) == "lobby");
       }
     );
   }

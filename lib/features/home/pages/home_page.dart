@@ -35,7 +35,8 @@ class HomePage extends StatelessWidget {
           if (!state.isUserLoggedIn) {
             success = await Navigator.pushNamed(context, CreateUserPage.routeName);
           }
-          if (success != null && success == true) {
+          bool canNavigate = state.isUserLoggedIn || (success ?? false);
+          if (canNavigate) {
             Navigator.of(context).pushNamed(JoinPage.routeName);
           }
         } else if (state is NavigateCreateGame) {
