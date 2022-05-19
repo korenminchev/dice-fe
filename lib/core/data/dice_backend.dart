@@ -26,7 +26,8 @@ class DiceBackend {
     final response = await http.get(
       Uri.parse('$serverUrl/$url'),
       headers: {
-        "Access-Control-Allow-Origin": "Access-Control-Allow-Origin, Accept",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
         "Accept": "application/json",
         "Content-Type": "application/json",
       });
@@ -45,7 +46,12 @@ class DiceBackend {
     print(json.encode(body));
     final response = await http.post(
       Uri.parse('$serverUrl/$url'),
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+        "Access-Control-Allow-Credentials": "true", // Required for cookies, authorization headers with HTTPS
+        "Access-Control-Allow-Origin": "*",
+        },
       body: json.encode(body)
     );
     Map<String, dynamic>? jsonBody = json.decode(response.body);
