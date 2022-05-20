@@ -33,7 +33,11 @@ class JoinPage extends StatelessWidget {
   Widget buildJoinPage(BuildContext context) {
     TextEditingController _joinRoomCodeController = TextEditingController();
     return BlocConsumer<JoinBloc, JoinState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is JoinSuccess) {
+          Navigator.of(context).pushReplacementNamed('/game/${state.roomCode}');
+        }
+      },
       builder: (context, state) {
         return Center(
           child: Column(
@@ -59,7 +63,10 @@ class JoinPage extends StatelessWidget {
                 text: "Join Game",
                 onTap: state.joinAllowed 
                   ? () => BlocProvider.of<JoinBloc>(context).add(
-                    JoinRequestEvent(_joinRoomCodeController.text)) 
+                    JoinRequestEvent(
+                      roomCode: _joinRoomCodeController.text,
+                      joinAllowed: true
+                    )) 
                   : null,
               ),
               const SizedBox(height: 40),

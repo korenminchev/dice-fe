@@ -68,6 +68,14 @@ class DiceBackend {
     return Right(_gameChannel!.stream);
   }
 
+  Future<Either<Failure, Stream>> getGameWs() async {
+    if (_gameChannel == null) {
+      return Left(Failure());
+    }
+    
+    return Right(_gameChannel!.stream);
+  }
+
   void init(String userId) {
     _userId = userId;
   }

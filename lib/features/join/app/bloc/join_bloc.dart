@@ -9,10 +9,7 @@ class JoinBloc extends Bloc<JoinEvent, JoinState> {
   JoinRepository _joinRepository;
 
   JoinBloc(this._joinRepository) : super(JoinInitial()) {
-    on<JoinEvent>((event, emit) {
-      // TODO: implement event handler
-    });
-
+    on<JoinRequestEvent>(_onJoinRequestEvent);
     on<TypingEvent>(_onTypingEvent);
   }
 
@@ -24,5 +21,12 @@ class JoinBloc extends Bloc<JoinEvent, JoinState> {
           ? emit(const JoinAllowed())
           : emit(JoinInitial()),
     );
+  }
+
+  void _onJoinRequestEvent(JoinRequestEvent event, Emitter<JoinState> emit) async {
+    if (!event.joinAllowed) {
+      return;
+    }
+    emit(JoinSuccess(roomCode: event.roomCode));
   }
 }
