@@ -17,7 +17,7 @@ class ServerFailure extends Failure {
 }
 
 class DiceBackend {
-  final String serverUrl = 'http://dice-be.shust.in';
+  final String serverUrl = 'https://dice-be.shust.in';
   WebSocketChannel? _gameChannel;
   late String _userId;
 
