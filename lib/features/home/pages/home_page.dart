@@ -1,5 +1,9 @@
-import 'package:dice_fe/core/drawer/dice_drawer.dart';
-import 'package:dice_fe/core/primary_button.dart';
+import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
+import 'package:dice_fe/core/widgets/primary_button.dart';
+import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
+import 'package:dice_fe/features/home/domain/home_repository.dart';
+import 'package:dice_fe/features/join/app/pages/join_page.dart';
+import 'package:dice_fe/features/join/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +20,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(),
       body: SafeArea(
         child: BlocProvider(
-          create: (context) => HomeBloc(),
+          create: (context) => HomeBloc(serviceLocator<HomeRepository>()),
           child: buildHomePage(context),
         ),
       ),
@@ -25,9 +29,16 @@ class HomePage extends StatelessWidget {
 
   Widget buildHomePage(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
-      listener: ((context, state) {
+      listener: ((context, state) async {
         if (state is NavigateJoinGame) {
-          // Navigator.of(context).pushNamed('/join');
+          var success;
+          if (!state.isUserLoggedIn) {
+            success = await Navigator.pushNamed(context, CreateUserPage.routeName);
+          }
+          bool canNavigate = state.isUserLoggedIn || (success ?? false);
+          if (canNavigate) {
+            Navigator.of(context).pushNamed(JoinPage.routeName);
+          }
         } else if (state is NavigateCreateGame) {
           // Navigator.of(context).pushNamed('/create');
         } else if (state is NavigateGameRules) {
@@ -41,16 +52,12 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 32),
               const Text(
                 "Dice",
-                style: TextStyle(
-                  fontFamily: "Hurricane",
-                  fontSize: 96
-                ),
+                style: TextStyle(fontFamily: "Hurricane", fontSize: 96),
               ),
               SizedBox(
-                width: 200, 
-                height: 200,
-                child: Image.asset("assets/images/dice_logo.png")
-              ),
+                  width: 200,
+                  height: 200,
+                  child: Image.asset("assets/images/dice_logo.png")),
               const SizedBox(height: 56),
               PrimaryButton(
                 text: 'Join Game',
@@ -74,7 +81,7 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Text(
-                      "Game rules >",
+                      "Game rules",
                       style: TextStyle(
                         fontSize: 20,
                       ),
