@@ -27,7 +27,7 @@ class DiceBackend {
       Uri.parse('$serverUrl/$url'),
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+        "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
         "Accept": "application/json",
         "Content-Type": "application/json",
       });
@@ -48,7 +48,7 @@ class DiceBackend {
       Uri.parse('$serverUrl/$url'),
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+        "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
         "Access-Control-Allow-Credentials": "true", // Required for cookies, authorization headers with HTTPS
         "Access-Control-Allow-Origin": "*",
         },

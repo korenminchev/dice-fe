@@ -28,18 +28,7 @@ class DiceApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // initialRoute: HomePage.routeName,
-      // routes: {
-      //   HomePage.routeName: (context) => const HomePage(),
-      //   JoinPage.routeName: (context) => const JoinPage(),
-      //   CreateUserPage.routeName: (context) => const CreateUserPage(),
-      //   GamePage.routeName: ((context) { 
-      //     // final roomCode = ModalRoute.of(context)!.settings.arguments as String;
-      //     return GamePage(
-      //       roomCode: "7122"
-      //     );
-      //   }),
-      // },
+      initialRoute: HomePage.routeName,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
           settings: settings,
