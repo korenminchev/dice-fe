@@ -8,9 +8,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ServerFailure extends Failure {
   final int statusCode;
-  final String message;
 
-  ServerFailure(this.statusCode, this.message);
+  ServerFailure(this.statusCode, String message) : super(message: message);
 
   @override
   String toString() => message;

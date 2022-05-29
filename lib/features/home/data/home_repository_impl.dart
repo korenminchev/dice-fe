@@ -13,7 +13,7 @@ class HomeRepositoryImpl implements HomeRepository {
   
   @override
   bool isUserLoggedIn() {
-    String userId = _cookieManager.getCookie(USER_COOKIE_RECORD_NAME);
+    String userId = _cookieManager.getCookie(userCookieRecordName);
     if (userId.isNotEmpty) {
       _backend.init(userId);
       return true;

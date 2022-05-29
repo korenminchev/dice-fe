@@ -6,7 +6,7 @@ part 'join_event.dart';
 part 'join_state.dart';
 
 class JoinBloc extends Bloc<JoinEvent, JoinState> {
-  JoinRepository _joinRepository;
+  final JoinRepository _joinRepository;
 
   JoinBloc(this._joinRepository) : super(JoinInitial()) {
     on<JoinRequestEvent>(_onJoinRequestEvent);

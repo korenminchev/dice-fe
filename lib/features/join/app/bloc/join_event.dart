@@ -11,7 +11,7 @@ class TypingEvent extends JoinEvent {
 
 class JoinRequestEvent extends JoinEvent {
   final String roomCode;
-  bool joinAllowed;
+  final bool joinAllowed;
 
   JoinRequestEvent({required this.roomCode, required this.joinAllowed});
 }
