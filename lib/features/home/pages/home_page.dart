@@ -31,23 +31,39 @@ class HomePage extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: ((context, state) async {
         if (state is NavigateJoinGame) {
-          var success;
-          if (!state.isUserLoggedIn) {
-            success = await Navigator.pushNamed(context, CreateUserPage.routeName);
-          }
-          bool canNavigate = state.isUserLoggedIn || (success ?? false);
-          if (canNavigate) {
+          if (state.isUserLoggedIn) {
             Navigator.of(context).pushNamed(JoinPage.routeName);
           }
+          else {
+            Navigator.pushNamed(context, CreateUserPage.routeName, 
+              arguments: () => Navigator.of(context).pushReplacementNamed(JoinPage.routeName));
+          }
         } else if (state is NavigateCreateGame) {
-          // Navigator.of(context).pushNamed('/create');
+          if (state.isUserLoggedIn) {
+            BlocProvider.of<HomeBloc>(context).add(CreateGame());
+          }
+          else {
+            Navigator.pushNamed(context, CreateUserPage.routeName, 
+              arguments: () => BlocProvider.of<HomeBloc>(context).add(CreateGame()));
+          }
         } else if (state is NavigateGameRules) {
           // Navigator.of(context).pushNamed('/game_rules');
+        }
+        else if (state is GameCreated) {
+          Navigator.of(context).pushNamed('/game/${state.roomCode}');
+        }
+        else if (state is Error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+            ),
+          );
         }
       }),
       builder: (context, state) {
         return Center(
-          child: Column(
+          child: (state is Loading) ? const CircularProgressIndicator()
+          : Column(
             children: <Widget>[
               const SizedBox(height: 32),
               const Text(
@@ -69,7 +85,7 @@ class HomePage extends StatelessWidget {
               PrimaryButton(
                 text: 'Create Game',
                 onTap: () {
-                  BlocProvider.of<HomeBloc>(context).add(CreateGame());
+                  BlocProvider.of<HomeBloc>(context).add(CreateGameButton());
                 },
               ),
               const SizedBox(height: 32),

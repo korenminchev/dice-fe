@@ -5,6 +5,8 @@ abstract class HomeState {}
 
 class HomeInitial extends HomeState {}
 
+class Loading extends HomeState {}
+
 class NavigateJoinGame extends HomeState {
   final bool isUserLoggedIn;
 
@@ -18,3 +20,15 @@ class NavigateCreateGame extends HomeState {
 }
 
 class NavigateGameRules extends HomeState {}
+
+class Error extends HomeState {
+  final String message;
+
+  Error(this.message);
+}
+
+class GameCreated extends HomeState {
+  final String roomCode;
+
+  GameCreated(this.roomCode);
+}

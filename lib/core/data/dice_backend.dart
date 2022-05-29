@@ -8,9 +8,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ServerFailure extends Failure {
   final int statusCode;
-  final String message;
 
-  ServerFailure(this.statusCode, this.message);
+  ServerFailure(this.statusCode, String message) : super(message: message);
 
   @override
   String toString() => message;
@@ -40,7 +39,7 @@ class DiceBackend {
     }
   }
 
-  Future<Either<ServerFailure, Map<String, dynamic>>> _post(String url,
+  Future<Either<ServerFailure, http.Response>> _post(String url,
       {Map<String, String>? body}) async {
     print('POST: $url');
     print(json.encode(body));
@@ -54,13 +53,12 @@ class DiceBackend {
         },
       body: json.encode(body)
     );
-    Map<String, dynamic>? jsonBody = json.decode(response.body);
     if (response.statusCode == 200) {
-      return Right(jsonBody ?? {});
+      return Right(response);
     }
     print("RESPONSE: ${response.statusCode}");
     print(response.body);
-    return Left(ServerFailure(response.statusCode, jsonBody?["message"] ?? ""));
+    return Left(ServerFailure(response.statusCode, response.body));
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
@@ -85,9 +83,18 @@ class DiceBackend {
     return response.fold(
       (failure) => Left(failure),
       (response) {
-        _userId = response['id'];
-        return Right(DiceUser.fromJson(response));
+        Map<String, dynamic> userJson = json.decode(response.body);
+        _userId = userJson['id'];
+        return Right(DiceUser.fromJson(userJson));
       },
+    );
+  }
+
+  Future<Either<ServerFailure, String>> createGame() async {
+    final response = await _post("games/");
+    return response.fold(
+      (failure) => Left(failure),
+      (response) => Right(json.decode(response.body)),
     );
   }
 

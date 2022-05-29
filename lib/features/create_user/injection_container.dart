@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
 import 'package:dice_fe/features/create_user/app/bloc/createuser_bloc.dart';

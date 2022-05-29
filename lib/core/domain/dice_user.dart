@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'dice_user.g.dart';
 
-const String USER_COOKIE_RECORD_NAME = 'dice_user';
+const String userCookieRecordName = 'dice_user';
 
 @JsonSerializable()
 class DiceUser {

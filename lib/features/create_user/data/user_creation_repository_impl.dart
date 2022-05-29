@@ -4,7 +4,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
-import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/features/create_user/domain/user_createtion_repository.dart';
 
 class UserCreationRepositoryImpl implements UserCreationRepository {
@@ -20,7 +19,7 @@ class UserCreationRepositoryImpl implements UserCreationRepository {
       (failure) => Left(UserCreationFailed()),
       (user) {
         _cookieManager.addToCookie(
-          USER_COOKIE_RECORD_NAME,
+          userCookieRecordName,
           jsonEncode(user.toJson())
         );
         return const Right(null);

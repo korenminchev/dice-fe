@@ -7,10 +7,14 @@ class JoinGame extends HomeEvent {
   JoinGame();
 }
 
-class CreateGame extends HomeEvent {
-  CreateGame();
+class CreateGameButton extends HomeEvent {
+  CreateGameButton();
 }
 
 class GameRules extends HomeEvent {
   GameRules();
+}
+
+class CreateGame extends HomeEvent {
+  CreateGame();
 }
