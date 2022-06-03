@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
@@ -62,7 +63,14 @@ class DiceBackend {
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
-    _gameChannel = WebSocketChannel.connect(Uri.parse('$serverUrl/games/ws/$roomCode'));
+    try {
+      _gameChannel = WebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
+    }
+    catch(e) {
+      print(e);
+      return Left(Failure());
+    }
+    print(_gameChannel);
     return Right(_gameChannel!.stream);
   }
 

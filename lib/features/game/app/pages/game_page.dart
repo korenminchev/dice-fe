@@ -1,6 +1,7 @@
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
+import 'package:dice_fe/features/game/app/widgets/game_lobby.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/injection_container.dart';
@@ -35,21 +36,35 @@ class GamePage extends StatelessWidget {
     );
   }
 
+  void onCriticalError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Room code is invalid"),
+      ),
+    );
+    Navigator.of(context).popUntil(ModalRoute.withName(HomePage.routeName));
+  }
+
   Widget buildGamePage(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
         if (state is GameRoomCodeInvalid) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Room code is invalid"),
-            ),
-          );
-          Navigator.of(context).popUntil(ModalRoute.withName(HomePage.routeName));
+          onCriticalError(context, "Room code is invalid");
+        }
+        if (state is NetworkError) {
+          onCriticalError(context, "Network error");
         }
       },
       builder: (context, state) {
         if (state is GameLobbyLoading) {
           return const Center(child: CircularProgressIndicator.adaptive());
+        }
+
+        if (state is GameLobbyLoaded) {
+          return GameLobby(
+            roomCode: roomCode,
+            users: state.users,
+          );
         }
         return const Center(child: Text("Game page"));
       }
