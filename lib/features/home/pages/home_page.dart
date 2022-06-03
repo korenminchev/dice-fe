@@ -91,7 +91,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 32),
               GestureDetector(
                 onTap: () {
-                  BlocProvider.of<HomeBloc>(context).add(GameRules());
+                  BlocProvider.of<HomeBloc>(context).add(GameRulesEvent());
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

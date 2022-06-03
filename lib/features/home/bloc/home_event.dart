@@ -11,8 +11,8 @@ class CreateGameButton extends HomeEvent {
   CreateGameButton();
 }
 
-class GameRules extends HomeEvent {
-  GameRules();
+class GameRulesEvent extends HomeEvent {
+  GameRulesEvent();
 }
 
 class CreateGame extends HomeEvent {

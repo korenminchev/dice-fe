@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/domain/dice_user.dart';
+import 'package:dice_fe/core/domain/models/game_rules.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'websocket_icd.g.dart';
@@ -35,14 +36,20 @@ class GameStart extends Message {
 }
 
 _usersFromJson(List<dynamic> json) {
-  return json.map((user) => DiceUser.fromJson(user)).toList();
+  return json.map((user) {
+    String id = user.keys.toList().first;
+    String name = user[id];
+    return DiceUser(id: id, name: name);
+  });
 }
 
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
-  LobbyUpdate(this.users) : super(Event.lobbyUpdate);
+  LobbyUpdate(this.players, this.rules) : super(Event.lobbyUpdate);
   @JsonKey(fromJson: _usersFromJson)
-  List<DiceUser>? users;
+  List<DiceUser>? players;
+
+  GameRules? rules;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);
   toJson() => _$LobbyUpdateToJson(this);

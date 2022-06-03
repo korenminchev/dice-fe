@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
@@ -36,10 +38,6 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   Stream<Message> backendMessage(Stream stream) async* {
-    print("Listening on BE stream");
-
-    await for (final json in stream) {
-      yield Message.fromJson(json);
-    }
+    stream.map((eventJson) => Message.fromJson(jsonDecode(eventJson)));
   }
 }

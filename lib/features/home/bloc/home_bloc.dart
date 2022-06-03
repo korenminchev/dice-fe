@@ -13,7 +13,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<CreateGameButton>((event, emit) => emit(NavigateCreateGame(
       _repository.isUserLoggedIn()
     )));
-    on<GameRules>((event, emit) => emit(NavigateGameRules()));
+    on<GameRulesEvent>((event, emit) => emit(NavigateGameRules()));
     on<CreateGame>(_onCreateGame);
   }
 
