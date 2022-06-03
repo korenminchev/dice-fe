@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
@@ -13,9 +15,9 @@ class HomeRepositoryImpl implements HomeRepository {
   
   @override
   bool isUserLoggedIn() {
-    String userId = _cookieManager.getCookie(userCookieRecordName);
-    if (userId.isNotEmpty) {
-      _backend.init(userId);
+    String user = _cookieManager.getCookie(userCookieRecordName);
+    if (user.isNotEmpty) {
+      _backend.init(jsonDecode(user));
       return true;
     }
     return false;

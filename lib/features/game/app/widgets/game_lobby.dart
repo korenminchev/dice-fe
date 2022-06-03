@@ -13,9 +13,9 @@ class GameLobby extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Room code: $roomCode"),
+        Text("Room $roomCode"),
         const Divider(),
-        ...users.map((user) => Text("${user.name}")),
+        ...users.map((user) => Text(user.name)),
       ],
     );
   }

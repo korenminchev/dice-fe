@@ -28,6 +28,7 @@ class GameRepositoryImpl extends GameRepository {
     final joinRoomBackendResult = await _backend.join(roomCode);
     return joinRoomBackendResult.fold(
       (failure) {
+        print("Failed getting BE stream");
         return Left(NetworkError());
       },
       (stream) => Right(backendMessage(stream))
@@ -35,14 +36,10 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   Stream<Message> backendMessage(Stream stream) async* {
-    stream.listen(
-      (json) sync* {
-        Message message = Message.fromJson(json);
-        yield message;
-      },
-      onError: (error) {
-        print(error);
-      },
-    );
+    print("Listening on BE stream");
+
+    await for (final json in stream) {
+      yield Message.fromJson(json);
+    }
   }
 }

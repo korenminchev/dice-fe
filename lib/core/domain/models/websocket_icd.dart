@@ -11,7 +11,7 @@ enum Event {
 
 Map<String, Event> eventMap = {
   "game_start": Event.gameStart,
-  "lobby_update": Event.lobbyUpdate
+  "game_update": Event.lobbyUpdate
 };
 
 class Message {
@@ -34,9 +34,14 @@ class GameStart extends Message {
   GameStart() : super(Event.gameStart);
 }
 
+_usersFromJson(List<dynamic> json) {
+  return json.map((user) => DiceUser.fromJson(user)).toList();
+}
+
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
   LobbyUpdate(this.users) : super(Event.lobbyUpdate);
+  @JsonKey(fromJson: _usersFromJson)
   List<DiceUser>? users;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);

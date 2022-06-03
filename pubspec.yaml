@@ -39,7 +39,7 @@ dependencies:
   flutter_bloc: ^8.0.1
   dartz: ^0.10.1
   http: ^0.13.4
-  web_socket_channel: ^2.1.0
+  web_socket_channel: ^2.2.0
   get_it: ^7.2.0
   equatable: ^2.0.3
 

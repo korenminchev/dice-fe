@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:bloc/bloc.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
@@ -22,9 +24,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       (failure) => emit(GameRoomCodeInvalid()),
       (joinable) {
         if (joinable) {
+          print("Room code ${event.roomCode} is joinable");
           loadLobby(event.roomCode, emit);
         }
         else {
+          print("Room code ${event.roomCode} is not joinable");
           emit(GameRoomCodeInvalid());
         }
       }
@@ -35,13 +39,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(GameLobbyLoading());
     final streamResult = await _gameRepository.joinRoom(roomCode);
     streamResult.fold(
-      (failure) => emit(GameNetworkError()),
+      (failure) {
+        print("Fail getting Repository stream");
+        emit(GameNetworkError());
+      },
       (stream) => handleBackendStream(stream, emit)
     );
-    
   }
 
   void handleBackendStream(Stream stream, Emitter<GameState> emit) async {
+    print("Listening on Repository stream");
     stream.listen(
       (message) {
         if (message is GameStart) {

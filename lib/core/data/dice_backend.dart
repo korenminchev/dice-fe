@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ServerFailure extends Failure {
@@ -17,9 +18,9 @@ class ServerFailure extends Failure {
 }
 
 class DiceBackend {
-  final String serverUrl = 'https://dice-be.shust.in';
+  final String serverUrl = 'https://dice-be.shust.in:9001';
   WebSocketChannel? _gameChannel;
-  late String _userId;
+  late Map<String, dynamic> _user;
 
   Future<Either<ServerFailure, http.Response>> _get(String url) async {
     print('GET: $url');
@@ -63,14 +64,17 @@ class DiceBackend {
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
+    print("BE join");
     try {
-      _gameChannel = WebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
+      _gameChannel = HtmlWebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
     }
     catch(e) {
       print(e);
       return Left(Failure());
     }
     print(_gameChannel);
+    print(_user["id"]);
+    _gameChannel!.sink.add(json.encode({"id": _user["id"]}));
     return Right(_gameChannel!.stream);
   }
 
@@ -82,8 +86,8 @@ class DiceBackend {
     return Right(_gameChannel!.stream);
   }
 
-  void init(String userId) {
-    _userId = userId;
+  void init(Map<String, dynamic> user) {
+    _user = user;
   }
 
   Future<Either<ServerFailure, DiceUser>> createUser(String username) async {
@@ -92,7 +96,7 @@ class DiceBackend {
       (failure) => Left(failure),
       (response) {
         Map<String, dynamic> userJson = json.decode(response.body);
-        _userId = userJson['id'];
+        _user = userJson['id'];
         return Right(DiceUser.fromJson(userJson));
       },
     );
