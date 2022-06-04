@@ -7,51 +7,91 @@ part 'websocket_icd.g.dart';
 enum Event {
   gameStart,
   lobbyUpdate,
+  playerReady,
+  playerLeave,
   none
 }
 
-Map<String, Event> eventMap = {
+Map<String, Event> incomingEventMap = {
   "game_start": Event.gameStart,
   "game_update": Event.lobbyUpdate
 };
 
-class Message {
+Map<Event, String> outgoingEventMap = {
+  Event.playerReady: "player_ready",
+  Event.playerLeave: "player_leave"
+};
+
+abstract class Message {
   final Event messageType;
   const Message(this.messageType);
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    switch (eventMap[json['event']]) {
+    switch (incomingEventMap[json['event']]) {
       case Event.gameStart:
         return GameStart();
       case Event.lobbyUpdate:
         return LobbyUpdate.fromJson(json);
       default:
-        return const Message(Event.none);    
+        return LobbyUpdate();
     }
   }
+
+  Map<String, dynamic> toJson();
 }
 
+@JsonSerializable()
 class GameStart extends Message {
   GameStart() : super(Event.gameStart);
-}
 
-_usersFromJson(Map<String, dynamic> json) {
-
-  return json.keys.map((userId) {
-    String id = userId;
-    String name = json[id]['name'];
-    return DiceUser(id: id, name: name);
-  }).toList();
+  factory GameStart.fromJson(Map<String, dynamic> json) => _$GameStartFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$GameStartToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
-  LobbyUpdate(this.players, this.rules) : super(Event.lobbyUpdate);
-  @JsonKey(fromJson: _usersFromJson)
+  LobbyUpdate({
+    this.players,
+    this.rules,
+    this.admin
+  }) : super(Event.lobbyUpdate);
   List<DiceUser>? players;
-  
   GameRules? rules;
+  DiceUser? admin;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);
+  @override
   toJson() => _$LobbyUpdateToJson(this);
+}
+
+@JsonSerializable()
+class PlayerLeave extends Message {
+  @JsonKey(name: 'event')
+  String eventString = "player_leave";
+  PlayerLeave() : super(Event.playerLeave);
+
+  factory PlayerLeave.fromJson(Map<String, dynamic> json) => _$PlayerLeaveFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$PlayerLeaveToJson(this);
+}
+
+@JsonSerializable()
+class PlayerReady extends Message {
+  @JsonKey(name: 'event')
+  String eventString = "player_ready";
+  bool isReady;
+  DiceUser playerOnLeft;
+  DiceUser playerOnRight;
+
+  PlayerReady(
+    this.isReady,
+    this.playerOnLeft,
+    this.playerOnRight
+  ) : super(Event.playerReady);
+  
+
+  factory PlayerReady.fromJson(Map<String, dynamic> json) => _$PlayerReadyFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$PlayerReadyToJson(this);
 }

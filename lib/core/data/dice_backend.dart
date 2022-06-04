@@ -119,4 +119,19 @@ class DiceBackend {
       }
     );
   }
+
+  Either<Failure, void> sendToWS(Map<String, dynamic> message) {
+    if (_gameChannel == null) {
+      return Left(Failure());
+    }
+    _gameChannel!.sink.add(json.encode(message));
+    return const Right(null);
+  }
+
+  void closeWS() {
+    if (_gameChannel != null) {
+      _gameChannel!.sink.close();
+      _gameChannel = null;
+    }
+  }
 }

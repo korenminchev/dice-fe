@@ -21,6 +21,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc(this._gameRepository) : super(GameInitial()) {
     on<CheckCodeValidity>(_onCheckCodeValidity);
     on<StreamStarted>(handleBackendStream);
+    on<ExitGame>(_onExitGame);
+    on<ReadyEvent>(_onReady);
   }
 
   void _onCheckCodeValidity(CheckCodeValidity event, Emitter<GameState> emit) async {
@@ -46,6 +48,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     );
   }
 
+  void _onExitGame(ExitGame event, Emitter<GameState> emit) {
+    _gameRepository.sendMessage(PlayerLeave());
+    _gameRepository.exit();
+  }
+
   void loadLobby(String roomCode, Emitter<GameState> emit) async{
     emit(GameLobbyLoading(_user));
     final streamResult = await _gameRepository.joinRoom(roomCode);
@@ -69,7 +76,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
         else if (message is LobbyUpdate) {
           if (state is GameLobbyLoaded) {
-            emit((state as GameLobbyLoaded).copyWith(message));
+            emit((state as GameLobbyLoaded).update(message));
           }
           else {
             emit(GameLobbyLoaded.fromMessage(message));
@@ -77,5 +84,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
       }
     );
+  }
+
+  void _onReady(ReadyEvent event, Emitter<GameState> emit) {
+    _gameRepository.sendMessage(PlayerReady(event.isReady, event.userOnLeft, event.userOnRight));
+    emit((state as GameLobbyLoaded).copyWith(userReady: event.isReady));
   }
 }

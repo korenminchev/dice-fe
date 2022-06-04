@@ -11,6 +11,16 @@ class CheckCodeValidity extends GameEvent {
 
 class StreamStarted extends GameEvent {}
 
+class ExitGame extends GameEvent {}
+
+class ReadyEvent extends GameEvent {
+  bool isReady;
+  final DiceUser userOnLeft;
+  final DiceUser userOnRight;
+
+  ReadyEvent(this.isReady, this.userOnLeft, this.userOnRight);
+}
+
 class ServerMessage extends GameEvent {
   final Message message;
 

@@ -52,15 +52,23 @@ class GameRepositoryImpl extends GameRepository {
 
   Stream<Message> backendMessage(Stream stream) async* {
     await for (final message in stream) {
-      print(message + "\n");
       Map<String, dynamic> jsonMessage = json.decode(message) as Map<String, dynamic>;
       print(jsonMessage);
       yield Message.fromJson(jsonMessage);
     }
+  }
 
-    // stream.map((eventJson) {
-    //   print(eventJson);
-    //   return Message.fromJson(jsonDecode(eventJson));
-    // });
+  @override
+  Either<Failure, void> sendMessage(Message message) {
+    final sendMessageBackendResult = _backend.sendToWS(message.toJson());
+    return sendMessageBackendResult.fold(
+      (failure) => Left(failure),
+      (_) => const Right(null)
+    );
+  }
+
+  @override
+  void exit() {
+    _backend.closeWS();
   }
 }

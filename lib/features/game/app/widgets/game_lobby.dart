@@ -9,11 +9,15 @@ class GameLobby extends StatefulWidget {
   final List<DiceUser> users;
   final DiceUser currentUser;
   final GameRules rules;
+  final void Function(bool, DiceUser, DiceUser) onReady;
+  final bool userReady;
   const GameLobby({Key? key,
     required this.roomCode,
     required this.users,
     required this.currentUser,
     required this.rules,
+    required this.onReady,
+    required this.userReady
   }) : super(key: key);
 
   @override
@@ -175,10 +179,12 @@ class _GameLobbyState extends State<GameLobby> {
           ),
           const Expanded(child: SizedBox()),
           PrimaryButton(
-            text: "Ready",
+            text: widget.userReady ? "Unready" : "Ready",
             width: MediaQuery.of(context).size.width * 0.8,
             height: 64,
-            onTap: () {}
+            onTap: (leftUser != null && rightUser != null)
+              ? () => widget.onReady(!widget.userReady, leftUser!, rightUser!)
+              : null
           ),
           const SizedBox(height: 32),
         ],
