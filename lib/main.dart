@@ -41,6 +41,13 @@ class DiceApp extends StatelessWidget {
               return const CreateUserPage();
             } else if (settings.name!.startsWith(GamePage.routeName)) {
               final roomCode = settings.name!.split('/').last;
+              if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Invalid room code'),
+                  ),
+                );
+              }
               return GamePage(roomCode: roomCode);
             }
             

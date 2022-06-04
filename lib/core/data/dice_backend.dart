@@ -56,6 +56,8 @@ class DiceBackend {
       body: json.encode(body)
     );
     if (response.statusCode == 200) {
+      print("RESPONSE: ${response.statusCode}");
+      print(response.body);
       return Right(response);
     }
     print("RESPONSE: ${response.statusCode}");
@@ -93,7 +95,8 @@ class DiceBackend {
       (failure) => Left(failure),
       (response) {
         Map<String, dynamic> userJson = json.decode(response.body);
-        _user = userJson['id'];
+        userJson.remove("friend_ids");
+        _user = userJson;
         return Right(DiceUser.fromJson(userJson));
       },
     );

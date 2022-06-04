@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
@@ -10,7 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GamePage extends StatelessWidget {
   final String roomCode;
-  const GamePage({ 
+  DiceUser? currentUser;
+  GamePage({ 
     required this.roomCode,
     Key? key }) : super(key: key);
 
@@ -56,7 +58,12 @@ class GamePage extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        if (state is GameInitial) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+
         if (state is GameLobbyLoading) {
+          currentUser = state.currentUser;
           return const Center(child: CircularProgressIndicator.adaptive());
         }
 
@@ -64,8 +71,11 @@ class GamePage extends StatelessWidget {
           return GameLobby(
             roomCode: roomCode,
             users: state.users,
+            currentUser: currentUser ?? DiceUser(id: "123", name: "Anonymous"),
+            rules: state.rules,
           );
         }
+
         return const Center(child: Text("Game page"));
       }
     );

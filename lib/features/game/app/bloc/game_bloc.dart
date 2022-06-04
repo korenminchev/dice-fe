@@ -16,6 +16,7 @@ part 'game_state.dart';
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository _gameRepository;
   late final Stream _websocketStream;
+  late final DiceUser _user;
 
   GameBloc(this._gameRepository) : super(GameInitial()) {
     on<CheckCodeValidity>(_onCheckCodeValidity);
@@ -29,7 +30,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         emit(GameUserNotLoggedIn());
         // Wait here for user name
       },
-      (r) => null
+      (user) => _user = user,
     );
     final isRoomCodeValid = await _gameRepository.isRoomCodeValid(event.roomCode);
     isRoomCodeValid.fold(
@@ -46,7 +47,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void loadLobby(String roomCode, Emitter<GameState> emit) async{
-    emit(GameLobbyLoading());
+    emit(GameLobbyLoading(_user));
     final streamResult = await _gameRepository.joinRoom(roomCode);
     streamResult.fold(
       (failure) {

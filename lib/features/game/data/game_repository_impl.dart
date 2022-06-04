@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
 import 'package:dice_fe/core/domain/authorization_repository.dart';
+import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
@@ -14,11 +15,11 @@ class GameRepositoryImpl extends GameRepository {
   GameRepositoryImpl(this._backend, this._authorizationRepository);
 
   @override
-  Either<Failure, bool> isUserLoggedIn() {
+  Either<Failure, DiceUser> isUserLoggedIn() {
     final loginResult = _authorizationRepository.getUser();
     return loginResult.fold(
       (failure) => Left(failure),
-      (user) => const Right(true),
+      (user) => Right(user),
     );
   }
 

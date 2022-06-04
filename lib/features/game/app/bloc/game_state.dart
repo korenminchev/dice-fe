@@ -14,7 +14,11 @@ class GameRoomCodeInvalid extends GameState {}
 
 class GameUserNotLoggedIn extends GameState {}
 
-class GameLobbyLoading extends GameState {}
+class GameLobbyLoading extends GameState {
+  final DiceUser currentUser;
+
+  GameLobbyLoading(this.currentUser);
+}
 
 class GameNetworkError extends GameState {}
 

@@ -1,9 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
 
 abstract class GameRepository {
   GameRepository();
-  Either<Failure, bool> isUserLoggedIn();
+  Either<Failure, DiceUser> isUserLoggedIn();
   Future<Either<Failure, bool>> isRoomCodeValid(String roomCode);
   Future<Either<Failure, Stream>> joinRoom(String roomCode);
 }

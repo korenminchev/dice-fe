@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 class PrimaryButton extends StatelessWidget {
   final void Function()? onTap;
   final String text;
+  final double width;
+  final double height;
   const PrimaryButton(
     {required this.text,
     required this.onTap,
+    this.width = 288,
+    this.height = 56,
     Key? key}) : super(key: key);
 
   @override
@@ -24,8 +28,8 @@ class PrimaryButton extends StatelessWidget {
       ),
       onPressed: onTap,
       child: SizedBox(
-        width: 288,
-        height: 56,
+        width: width,
+        height: height,
         child: Center(
           child: Text(
             text,
