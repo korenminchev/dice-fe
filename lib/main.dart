@@ -1,3 +1,4 @@
+import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/pages/game_page.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
@@ -40,6 +41,8 @@ class DiceApp extends StatelessWidget {
               return const JoinPage();
             } else if (settings.name == CreateUserPage.routeName) {
               return const CreateUserPage();
+            } else if (settings.name == CreateGamePage.route) {
+              return const CreateGamePage();
             } else if (settings.name!.startsWith(GamePage.routeName)) {
               final roomCode = settings.name!.split('/').last;
               if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {

@@ -1,5 +1,6 @@
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
+import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/home/domain/home_repository.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
@@ -40,7 +41,11 @@ class HomePage extends StatelessWidget {
           }
         } else if (state is NavigateCreateGame) {
           if (state.isUserLoggedIn) {
-            BlocProvider.of<HomeBloc>(context).add(CreateGame());
+            Navigator.pushNamed(
+              context,
+              CreateGamePage.route
+            );
+            // BlocProvider.of<HomeBloc>(context).add(CreateGame());
           }
           else {
             Navigator.pushNamed(context, CreateUserPage.routeName, 
