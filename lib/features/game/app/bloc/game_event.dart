@@ -8,3 +8,11 @@ class CheckCodeValidity extends GameEvent {
 
   CheckCodeValidity(this.roomCode);
 }
+
+class StreamStarted extends GameEvent {}
+
+class ServerMessage extends GameEvent {
+  final Message message;
+
+  ServerMessage(this.message);
+}

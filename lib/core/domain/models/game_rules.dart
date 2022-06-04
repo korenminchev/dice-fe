@@ -6,7 +6,7 @@ part 'game_rules.g.dart';
 class GameRules {
   @JsonKey(name: 'initial_dice_count')
   int? initialDiceCount;
-  @JsonKey(name: 'passo_allowed')
+  @JsonKey(name: 'paso_allowed')
   bool? pasoAllowed;
   @JsonKey(name: 'exact_allowed')
   bool? exactAllowed;

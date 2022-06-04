@@ -15,10 +15,12 @@ class AuthorizationRepositoryImpl implements AuthorizationRepository {
   AuthorizationRepositoryImpl(this._diceBackend, this._cookieManager);
 
   @override
-  Future<Either<Failure, DiceUser>> getUser() async {
-    final userData = _cookieManager.getCookie('user');
+  Either<Failure, DiceUser> getUser() {
+    final userData = _cookieManager.getCookie(userCookieRecordName);
     if (userData.isNotEmpty) {
-      return Right(DiceUser.fromJson(json.decode(userData)));
+      Map<String, dynamic> userJson = jsonDecode(userData);
+      _diceBackend.init(userJson);
+      return Right(DiceUser.fromJson(userJson));
     }
     return Left(NoUserId());
   }
@@ -29,7 +31,7 @@ class AuthorizationRepositoryImpl implements AuthorizationRepository {
     return createResult.fold(
       (failure) => Left(failure),
       (user) {
-        _cookieManager.addToCookie('user', json.encode(user.toJson()));
+        _cookieManager.addToCookie(userCookieRecordName, json.encode(user.toJson()));
         return Right(user);
       },
     );

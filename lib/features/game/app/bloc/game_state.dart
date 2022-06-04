@@ -12,6 +12,8 @@ class GameInitial extends GameState {}
 
 class GameRoomCodeInvalid extends GameState {}
 
+class GameUserNotLoggedIn extends GameState {}
+
 class GameLobbyLoading extends GameState {}
 
 class GameNetworkError extends GameState {}

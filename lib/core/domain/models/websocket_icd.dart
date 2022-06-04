@@ -35,12 +35,13 @@ class GameStart extends Message {
   GameStart() : super(Event.gameStart);
 }
 
-_usersFromJson(List<dynamic> json) {
-  return json.map((user) {
-    String id = user.keys.toList().first;
-    String name = user[id];
+_usersFromJson(Map<String, dynamic> json) {
+
+  return json.keys.map((userId) {
+    String id = userId;
+    String name = json[id]['name'];
     return DiceUser(id: id, name: name);
-  });
+  }).toList();
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -48,7 +49,7 @@ class LobbyUpdate extends Message {
   LobbyUpdate(this.players, this.rules) : super(Event.lobbyUpdate);
   @JsonKey(fromJson: _usersFromJson)
   List<DiceUser>? players;
-
+  
   GameRules? rules;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);

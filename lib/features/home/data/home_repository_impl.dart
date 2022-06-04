@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/authorization_repository.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/features/home/domain/home_repository.dart';
@@ -10,17 +11,17 @@ import 'package:dice_fe/features/home/domain/home_repository.dart';
 class HomeRepositoryImpl implements HomeRepository {
   final DiceBackend _backend;
   final CookieManager _cookieManager;
+  final AuthorizationRepository _authorizationRepository;
 
-  HomeRepositoryImpl(this._backend, this._cookieManager);
+  HomeRepositoryImpl(this._backend, this._cookieManager, this._authorizationRepository);
   
   @override
   bool isUserLoggedIn() {
-    String user = _cookieManager.getCookie(userCookieRecordName);
-    if (user.isNotEmpty) {
-      _backend.init(jsonDecode(user));
-      return true;
-    }
-    return false;
+    final loginResult = _authorizationRepository.getUser();
+    return loginResult.fold(
+      (failure) => false,
+      (user) => true,
+    );
   }
 
   @override

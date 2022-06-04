@@ -15,22 +15,30 @@ part 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository _gameRepository;
+  late final Stream _websocketStream;
 
   GameBloc(this._gameRepository) : super(GameInitial()) {
     on<CheckCodeValidity>(_onCheckCodeValidity);
+    on<StreamStarted>(handleBackendStream);
   }
 
   void _onCheckCodeValidity(CheckCodeValidity event, Emitter<GameState> emit) async {
+    final logedInResult = _gameRepository.isUserLoggedIn();
+    logedInResult.fold(
+      (failure) {
+        emit(GameUserNotLoggedIn());
+        // Wait here for user name
+      },
+      (r) => null
+    );
     final isRoomCodeValid = await _gameRepository.isRoomCodeValid(event.roomCode);
     isRoomCodeValid.fold(
       (failure) => emit(GameRoomCodeInvalid()),
       (joinable) {
         if (joinable) {
-          print("Room code ${event.roomCode} is joinable");
           loadLobby(event.roomCode, emit);
         }
         else {
-          print("Room code ${event.roomCode} is not joinable");
           emit(GameRoomCodeInvalid());
         }
       }
@@ -42,17 +50,19 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final streamResult = await _gameRepository.joinRoom(roomCode);
     streamResult.fold(
       (failure) {
-        print("Fail getting Repository stream");
         emit(GameNetworkError());
       },
-      (stream) => handleBackendStream(stream, emit)
+      (stream) {
+        _websocketStream = stream;
+        add(StreamStarted());
+      }
     );
   }
 
-  void handleBackendStream(Stream stream, Emitter<GameState> emit) async {
-    print("Listening on Repository stream");
-    stream.listen(
-      (message) {
+  void handleBackendStream(StreamStarted event, Emitter<GameState> emit) async {
+    await emit.onEach(
+      _websocketStream,
+      onData: (message) {
         if (message is GameStart) {
           emit(GameStarted());
         }
@@ -64,10 +74,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             emit(GameLobbyLoaded.fromMessage(message));
           }
         }
-      },
-      onError: (error) {
-        print(error);
-      },
+      }
     );
   }
 }

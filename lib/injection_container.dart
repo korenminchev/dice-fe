@@ -1,5 +1,7 @@
+import 'package:dice_fe/core/data/authorization_repository_impl.dart';
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/authorization_repository.dart';
 import 'package:dice_fe/features/create_user/injection_container.dart';
 import 'package:dice_fe/features/game/injection_container.dart';
 import 'package:dice_fe/features/home/injection_container.dart';
@@ -15,6 +17,13 @@ Future<void> init() async {
 
   serviceLocator.registerLazySingleton<CookieManager>(
     () => CookieManager(),
+  );
+
+  serviceLocator.registerLazySingleton<AuthorizationRepository>(
+    () => AuthorizationRepositoryImpl(
+      serviceLocator<DiceBackend>(),
+      serviceLocator<CookieManager>(),
+    ),
   );
 
   initHome();

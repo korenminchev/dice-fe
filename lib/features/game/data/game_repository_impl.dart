@@ -2,13 +2,25 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/authorization_repository.dart';
+import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 
 class GameRepositoryImpl extends GameRepository {
-  DiceBackend _backend;
+  final DiceBackend _backend;
+  final AuthorizationRepository _authorizationRepository;
 
-  GameRepositoryImpl(this._backend);
+  GameRepositoryImpl(this._backend, this._authorizationRepository);
+
+  @override
+  Either<Failure, bool> isUserLoggedIn() {
+    final loginResult = _authorizationRepository.getUser();
+    return loginResult.fold(
+      (failure) => Left(failure),
+      (user) => const Right(true),
+    );
+  }
 
   @override
   Future<Either<GameFailure, bool>> isRoomCodeValid(String roomCode) async {
@@ -38,6 +50,16 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   Stream<Message> backendMessage(Stream stream) async* {
-    stream.map((eventJson) => Message.fromJson(jsonDecode(eventJson)));
+    await for (final message in stream) {
+      print(message + "\n");
+      Map<String, dynamic> jsonMessage = json.decode(message) as Map<String, dynamic>;
+      print(jsonMessage);
+      yield Message.fromJson(jsonMessage);
+    }
+
+    // stream.map((eventJson) {
+    //   print(eventJson);
+    //   return Message.fromJson(jsonDecode(eventJson));
+    // });
   }
 }

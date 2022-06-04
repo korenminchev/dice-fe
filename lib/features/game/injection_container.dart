@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/authorization_repository.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
 import 'package:dice_fe/features/game/data/game_repository_impl.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
@@ -11,5 +12,9 @@ void initGame() {
     () => GameBloc(serviceLocator<GameRepository>()));
 
   serviceLocator.registerLazySingleton<GameRepository>(
-    () => GameRepositoryImpl(serviceLocator<DiceBackend>()));
+    () => GameRepositoryImpl(
+      serviceLocator<DiceBackend>(),
+      serviceLocator<AuthorizationRepository>(),
+    ),
+  );
 }

@@ -18,7 +18,7 @@ class ServerFailure extends Failure {
 }
 
 class DiceBackend {
-  final String serverUrl = 'https://dice-be.shust.in:9001';
+  final String serverUrl = 'https://dice-be.shust.in';
   WebSocketChannel? _gameChannel;
   late Map<String, dynamic> _user;
 
@@ -64,7 +64,6 @@ class DiceBackend {
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
-    print("BE join");
     try {
       _gameChannel = HtmlWebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
     }
@@ -72,8 +71,6 @@ class DiceBackend {
       print(e);
       return Left(Failure());
     }
-    print(_gameChannel);
-    print(_user["id"]);
     _gameChannel!.sink.add(json.encode({"id": _user["id"]}));
     return Right(_gameChannel!.stream);
   }

@@ -5,6 +5,6 @@ import 'package:dice_fe/core/domain/failure.dart';
 class NoUserId extends Failure{}
 
 abstract class AuthorizationRepository {
-  Future<Either<Failure, DiceUser>> getUser();
+  Either<Failure, DiceUser> getUser();
   Future<Either<Failure, DiceUser>> createUser(String username);
 }
