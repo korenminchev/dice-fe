@@ -9,17 +9,19 @@ enum Event {
   lobbyUpdate,
   playerReady,
   playerLeave,
+  readyConfirmation,
   none
 }
 
 Map<String, Event> incomingEventMap = {
   "game_start": Event.gameStart,
-  "game_update": Event.lobbyUpdate
+  "game_update": Event.lobbyUpdate,
+  "ready_confirm": Event.readyConfirmation
 };
 
 Map<Event, String> outgoingEventMap = {
   Event.playerReady: "player_ready",
-  Event.playerLeave: "player_leave"
+  Event.playerLeave: "player_leave",
 };
 
 abstract class Message {
@@ -32,6 +34,8 @@ abstract class Message {
         return GameStart();
       case Event.lobbyUpdate:
         return LobbyUpdate.fromJson(json);
+      case Event.readyConfirmation:
+        return ReadyConfirmation.fromJson(json);
       default:
         return LobbyUpdate();
     }
@@ -80,18 +84,37 @@ class PlayerLeave extends Message {
 class PlayerReady extends Message {
   @JsonKey(name: 'event')
   String eventString = "player_ready";
-  bool isReady;
-  DiceUser playerOnLeft;
-  DiceUser playerOnRight;
+  bool ready;
+  @JsonKey(name: 'player_on_left')
+  String playerOnLeftId;
+  @JsonKey(name: 'player_on_right')
+  String playerOnRightId;
 
   PlayerReady(
-    this.isReady,
-    this.playerOnLeft,
-    this.playerOnRight
+    this.ready,
+    this.playerOnLeftId,
+    this.playerOnRightId
   ) : super(Event.playerReady);
   
 
   factory PlayerReady.fromJson(Map<String, dynamic> json) => _$PlayerReadyFromJson(json);
   @override
   Map<String, dynamic> toJson() => _$PlayerReadyToJson(this);
+}
+
+@JsonSerializable()
+class ReadyConfirmation extends Message {
+  @JsonKey(name: 'event')
+  String eventString = "ready_confirm";
+  bool success;
+  String? error;
+
+  ReadyConfirmation(
+    this.success,
+    this.error
+  ) : super(Event.readyConfirmation);
+
+  factory ReadyConfirmation.fromJson(Map<String, dynamic> json) => _$ReadyConfirmationFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$ReadyConfirmationToJson(this);
 }

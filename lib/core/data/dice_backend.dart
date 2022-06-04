@@ -124,6 +124,7 @@ class DiceBackend {
     if (_gameChannel == null) {
       return Left(Failure());
     }
+    print("Sending to WS: $message");
     _gameChannel!.sink.add(json.encode(message));
     return const Right(null);
   }

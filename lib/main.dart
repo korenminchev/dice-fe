@@ -18,6 +18,7 @@ class DiceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -25,8 +26,8 @@ class DiceApp extends StatelessWidget {
     return MaterialApp(
       title: 'Dice',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primarySwatch: Colors.grey,
+        visualDensity: VisualDensity.comfortable,
       ),
       initialRoute: HomePage.routeName,
       onGenerateRoute: (settings) {
@@ -62,6 +63,7 @@ class DiceApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
+        primarySwatch: Colors.purple,
         brightness: Brightness.dark,
         fontFamily: "Lato",
         splashFactory: NoSplash.splashFactory,

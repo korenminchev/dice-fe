@@ -82,12 +82,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             emit(GameLobbyLoaded.fromMessage(message));
           }
         }
+        else if (message is ReadyConfirmation) {
+          emit((state as GameLobbyLoaded).copyWith(
+            readyLoading: false,
+            userReady: message.success,
+            error: message.error
+          ));
+        }
       }
     );
   }
 
   void _onReady(ReadyEvent event, Emitter<GameState> emit) {
-    _gameRepository.sendMessage(PlayerReady(event.isReady, event.userOnLeft, event.userOnRight));
-    emit((state as GameLobbyLoaded).copyWith(userReady: event.isReady));
+    _gameRepository.sendMessage(PlayerReady(event.isReady, event.userOnLeft.id, event.userOnRight.id));
+    if (event.isReady) {
+      emit((state as GameLobbyLoaded).copyWith(readyLoading: true));
+    }
+    else {
+      emit((state as GameLobbyLoaded).copyWith(userReady: false));
+    }
   }
 }

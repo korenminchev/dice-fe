@@ -11,13 +11,17 @@ class GameLobby extends StatefulWidget {
   final GameRules rules;
   final void Function(bool, DiceUser, DiceUser) onReady;
   final bool userReady;
+  final bool readyLoading;
+  final String? error;
   const GameLobby({Key? key,
     required this.roomCode,
     required this.users,
     required this.currentUser,
     required this.rules,
     required this.onReady,
-    required this.userReady
+    required this.userReady,
+    required this.readyLoading,
+    required this.error,
   }) : super(key: key);
 
   @override
@@ -73,7 +77,7 @@ class _GameLobbyState extends State<GameLobby> {
                           ),
                         ))
                         .toList(),
-                      onChanged: (user) {
+                      onChanged: widget.userReady ? null : (user) {
                         leftUser = user as DiceUser;
                         setState(() {});
                       },
@@ -105,7 +109,7 @@ class _GameLobbyState extends State<GameLobby> {
                           ),
                         ))
                         .toList(),
-                      onChanged: (user) {
+                      onChanged: widget.userReady ? null : (user) {
                         rightUser = user as DiceUser;
                         setState(() {});
                       },
@@ -178,14 +182,19 @@ class _GameLobbyState extends State<GameLobby> {
             ]
           ),
           const Expanded(child: SizedBox()),
-          PrimaryButton(
-            text: widget.userReady ? "Unready" : "Ready",
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: 64,
-            onTap: (leftUser != null && rightUser != null)
-              ? () => widget.onReady(!widget.userReady, leftUser!, rightUser!)
-              : null
-          ),
+          if (widget.error != null)
+            Text(widget.error!, style: const TextStyle(color: Colors.red, fontSize: 18)),
+          if (widget.readyLoading)
+            const CircularProgressIndicator.adaptive()
+          else  
+            PrimaryButton(
+              text: widget.userReady ? "Unready" : "Ready",
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 64,
+              onTap: (leftUser != null && rightUser != null)
+                ? () => widget.onReady(!widget.userReady, leftUser!, rightUser!)
+                : null
+            ),
           const SizedBox(height: 32),
         ],
       ),

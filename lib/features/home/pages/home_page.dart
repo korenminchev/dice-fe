@@ -93,19 +93,14 @@ class HomePage extends StatelessWidget {
                 onTap: () {
                   BlocProvider.of<HomeBloc>(context).add(GameRulesEvent());
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "Game rules",
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    // Icon(Icons.chevron_right)
-                  ],
+                child: const Text(
+                  "Game rules",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
               ),
+              const SizedBox(height: 16)
             ],
           ),
         );

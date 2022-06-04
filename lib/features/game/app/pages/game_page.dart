@@ -130,6 +130,8 @@ class GamePage extends StatelessWidget {
             rules: state.rules,
             onReady: onUserReady,
             userReady: state.userReady,
+            readyLoading: state.readyLoading,
+            error: state.error,
           );
         }
 

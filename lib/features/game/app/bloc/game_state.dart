@@ -28,12 +28,16 @@ class GameLobbyLoaded extends GameState {
   final List<DiceUser> users;
   final GameRules rules;
   final bool userReady;
-  GameLobbyLoaded({required this.users, required this.rules, this.userReady = false});
+  final bool readyLoading;
+  final String? error;
+  GameLobbyLoaded({required this.users, required this.rules, this.userReady = false, this.readyLoading = false, this.error});
 
   GameLobbyLoaded.fromMessage(LobbyUpdate message) :
     users = message.players ?? [],
     rules = message.rules!,
-    userReady = false
+    userReady = false,
+    readyLoading = false,
+    error = ''
     ;
 
   GameLobbyLoaded update(LobbyUpdate update) {
@@ -47,15 +51,18 @@ class GameLobbyLoaded extends GameState {
     List<DiceUser>? users,
     GameRules? rules,
     bool? userReady,
+    bool? readyLoading,
+    String? error,
   }) {
     return GameLobbyLoaded(
       users: users ?? this.users,
       rules: rules ?? this.rules,
       userReady: userReady ?? this.userReady,
+      readyLoading: readyLoading ?? this.readyLoading,
+      error: error ?? this.error,
     );
   }
 
-
   @override
-  List<Object> get props => [users, rules, userReady];
+  List<Object> get props => [users, rules, userReady, readyLoading];
 }
