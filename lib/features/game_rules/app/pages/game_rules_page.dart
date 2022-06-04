@@ -24,6 +24,18 @@ class GameRulesPage extends StatelessWidget {
   }
 
   Widget buildGameRulesPage(BuildContext context) {
-    return const Center(child: Text("GameRules"),);
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: const [
+          Text("Game Rules", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+          SizedBox(height: 24),
+          Text("Dice is a gambling game played using dice (wow how shocking)\n\n"),
+          Text("Setup\n", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
   }
 }
