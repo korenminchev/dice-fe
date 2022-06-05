@@ -1,7 +1,6 @@
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/features/create_game/create_game_page.dart';
-import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/home/domain/home_repository.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
 import 'package:dice_fe/features/join/injection_container.dart';
@@ -32,30 +31,14 @@ class HomePage extends StatelessWidget {
     return BlocConsumer<HomeBloc, HomeState>(
       listener: ((context, state) async {
         if (state is NavigateJoinGame) {
-          if (state.isUserLoggedIn) {
-            Navigator.of(context).pushNamed(JoinPage.routeName);
-          }
-          else {
-            Navigator.pushNamed(context, CreateUserPage.routeName, 
-              arguments: () => Navigator.of(context).pushReplacementNamed(JoinPage.routeName));
-          }
+          Navigator.of(context).pushNamed(JoinPage.routeName);
         } else if (state is NavigateCreateGame) {
-          if (state.isUserLoggedIn) {
-            Navigator.pushNamed(
-              context,
-              CreateGamePage.route
-            );
-            // BlocProvider.of<HomeBloc>(context).add(CreateGame());
-          }
-          else {
-            Navigator.pushNamed(context, CreateUserPage.routeName, 
-              arguments: () => BlocProvider.of<HomeBloc>(context).add(CreateGame()));
-          }
+          Navigator.pushNamed(
+            context,
+            CreateGamePage.route
+          );
         } else if (state is NavigateGameRules) {
           // Navigator.of(context).pushNamed('/game_rules');
-        }
-        else if (state is GameCreated) {
-          Navigator.of(context).pushNamed('/game/${state.roomCode}');
         }
         else if (state is Error) {
           ScaffoldMessenger.of(context).showSnackBar(

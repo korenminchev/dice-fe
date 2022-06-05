@@ -9,24 +9,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HomeRepository _repository;
 
   HomeBloc(this._repository) : super(HomeInitial()) {
-    on<JoinGame>(_onJoinGame);
-    on<CreateGameButton>((event, emit) => emit(NavigateCreateGame(
-      _repository.isUserLoggedIn()
-    )));
+    on<JoinGame>(((event, emit) => emit(NavigateJoinGame())));
+    on<CreateGameButton>((event, emit) => emit(NavigateCreateGame()));
     on<GameRulesEvent>((event, emit) => emit(NavigateGameRules()));
-    on<CreateGame>(_onCreateGame);
-  }
-
-  _onJoinGame(JoinGame event, Emitter<HomeState> emit) {
-    emit(NavigateJoinGame(_repository.isUserLoggedIn()));
-  }
-
-  _onCreateGame(CreateGame event, Emitter<HomeState> emit) async {
-    emit(Loading());
-    final result = await _repository.createGame();
-    return result.fold(
-      (failure) => emit(Error(failure.message)),
-      (roomCode) => emit(GameCreated(roomCode))
-    );
   }
 }
