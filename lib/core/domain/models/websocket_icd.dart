@@ -85,9 +85,9 @@ class PlayerReady extends Message {
   @JsonKey(name: 'event')
   String eventString = "player_ready";
   bool ready;
-  @JsonKey(name: 'player_on_left')
+  @JsonKey(name: 'left_player_id')
   String playerOnLeftId;
-  @JsonKey(name: 'player_on_right')
+  @JsonKey(name: 'right_player_id')
   String playerOnRightId;
 
   PlayerReady(

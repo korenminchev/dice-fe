@@ -44,6 +44,9 @@ class GameLobbyLoaded extends GameState {
     return GameLobbyLoaded(
       users: update.players ?? users,
       rules: rules.update(rules),
+      readyLoading: readyLoading,
+      userReady: userReady,
+      error: error
     );
   }
 
