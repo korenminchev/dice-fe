@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/models/game_rules.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
@@ -17,9 +18,11 @@ class CreateGamePage extends StatefulWidget {
 
 class _CreateGamePageState extends State<CreateGamePage> {
   DiceBackend backend = serviceLocator<DiceBackend>();
-  int diceCount = 5;
-  bool paso = false;
-  bool exact = true;
+  GameRules rules = GameRules(
+    initialDiceCount: 5,
+    pasoAllowed: false,
+    exactAllowed: true
+  );
   bool loading = false;
 
   @override
@@ -62,7 +65,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
-                  value: diceCount,
+                  value: rules.initialDiceCount,
                   items: List.generate(
                     8,
                     (index) => DropdownMenuItem(
@@ -75,7 +78,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                   ),
                   onChanged: (newCount) {
                     setState(() {
-                      diceCount = newCount as int;
+                      rules.initialDiceCount = newCount as int;
                     });
                   },
                 ),
@@ -96,9 +99,9 @@ class _CreateGamePageState extends State<CreateGamePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 cupertino.CupertinoSwitch(
-                  value: paso,
+                  value: rules.pasoAllowed!,
                   onChanged: (newValue) => setState(() {
-                    paso = newValue;
+                    rules.pasoAllowed = newValue;
                   })
                 ),
                 const SizedBox(width: 8),
@@ -130,9 +133,9 @@ class _CreateGamePageState extends State<CreateGamePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 cupertino.CupertinoSwitch(
-                  value: exact,
+                  value: rules.exactAllowed!,
                   onChanged: (newValue) => setState(() {
-                    exact = newValue;
+                    rules.exactAllowed = newValue;
                   })
                 ),
                 const SizedBox(width: 8),
@@ -169,7 +172,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                   setState(() {
                     loading = true;
                   });
-                  final result = await backend.createGame();
+                  final result = await backend.createGame(rules);
                   result.fold(
                     (failure) => null,
                     (roomCode) => Navigator.pushReplacementNamed(

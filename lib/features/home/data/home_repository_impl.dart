@@ -26,15 +26,16 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Either<Failure, String>> createGame() async {
-    final response = await _backend.createGame();
-    return response.fold(
-      (failure) => Left(Failure(message: "Someting went wrong")),
-      (roomCode) {
-        if (roomCode.length != 4) {
-          return Left(Failure(message: "Someting went wrong"));
-        }
-        return Right(roomCode);
-      }
-    );
+    throw UnimplementedError();
+    // final response = await _backend.createGame();
+    // return response.fold(
+    //   (failure) => Left(Failure(message: "Someting went wrong")),
+    //   (roomCode) {
+    //     if (roomCode.length != 4) {
+    //       return Left(Failure(message: "Someting went wrong"));
+    //     }
+    //     return Right(roomCode);
+    //   }
+    // );
   }
 }

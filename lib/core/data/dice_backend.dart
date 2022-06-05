@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
+import 'package:dice_fe/core/domain/models/game_rules.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -42,7 +43,7 @@ class DiceBackend {
   }
 
   Future<Either<ServerFailure, http.Response>> _post(String url,
-      {Map<String, String>? body}) async {
+      {Map<String, dynamic>? body}) async {
     print('POST: $url');
     print(json.encode(body));
     final response = await http.post(
@@ -102,8 +103,9 @@ class DiceBackend {
     );
   }
 
-  Future<Either<ServerFailure, String>> createGame() async {
-    final response = await _post("games/");
+  Future<Either<ServerFailure, String>> createGame(GameRules rules) async {
+    final response = await _post("games/",
+      body: {"game_rules": rules.toJson()});
     return response.fold(
       (failure) => Left(failure),
       (response) => Right(json.decode(response.body)),
