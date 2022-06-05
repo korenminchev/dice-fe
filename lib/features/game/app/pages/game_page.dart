@@ -2,6 +2,7 @@ import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
+import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
 import 'package:dice_fe/features/game/app/widgets/game_lobby.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
@@ -42,7 +43,7 @@ class GamePage extends StatelessWidget {
         child: BlocProvider(
           create: (context) {
             gameBloc = GameBloc(serviceLocator<GameRepository>());
-            gameBloc.add(CheckCodeValidity(roomCode));
+            gameBloc.add(VerifyParams(roomCode));
             return gameBloc;
             },
           child: buildGamePage(context),
@@ -104,12 +105,21 @@ class GamePage extends StatelessWidget {
 
   Widget buildGamePage(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is GameRoomCodeInvalid) {
           onCriticalError(context, "Room code is invalid");
         }
         if (state is NetworkError) {
           onCriticalError(context, "Network error");
+        }
+        if (state is GameUserNotLoggedIn) {
+          await Navigator.pushNamed(
+            context,
+            CreateUserPage.routeName,
+            arguments: (DiceUser createdUser) {
+              Navigator.pop(context);
+              gameBloc.add(JoinGame(roomCode, createdUser));
+            });
         }
       },
       builder: (context, state) {

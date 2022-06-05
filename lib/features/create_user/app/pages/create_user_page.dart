@@ -36,7 +36,7 @@ class CreateUserPage extends StatelessWidget {
       listener: (context, state) {
         if (state is UserCreated) {
           Function onSuccess = ModalRoute.of(context)!.settings.arguments as Function;
-          onSuccess();
+          onSuccess(state.user);
         }
         if (state is CreateUserFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

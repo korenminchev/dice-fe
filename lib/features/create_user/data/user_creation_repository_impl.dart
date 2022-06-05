@@ -15,7 +15,7 @@ class UserCreationRepositoryImpl implements UserCreationRepository {
   UserCreationRepositoryImpl(this._backend, this._authorizationRepository);
 
   @override
-  Future<Either<Failure, void>> createUser(String name) async {
+  Future<Either<Failure, DiceUser>> createUser(String name) async {
     return (await _authorizationRepository.createUser(name));
   }
 }

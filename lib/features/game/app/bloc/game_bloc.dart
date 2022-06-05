@@ -19,32 +19,40 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   late final DiceUser _user;
 
   GameBloc(this._gameRepository) : super(GameInitial()) {
-    on<CheckCodeValidity>(_onCheckCodeValidity);
+    on<VerifyParams>(_onVerifyParams);
     on<StreamStarted>(handleBackendStream);
+    on<JoinGame>(_joinGame);
     on<ExitGame>(_onExitGame);
     on<ReadyEvent>(_onReady);
   }
 
-  void _onCheckCodeValidity(CheckCodeValidity event, Emitter<GameState> emit) async {
-    final logedInResult = _gameRepository.isUserLoggedIn();
-    logedInResult.fold(
-      (failure) {
-        emit(GameUserNotLoggedIn());
-        // Wait here for user name
-      },
-      (user) => _user = user,
-    );
+  void _onVerifyParams(VerifyParams event, Emitter<GameState> emit) async {
+    bool codeValid = false;
+    // Check room code is valid
     final isRoomCodeValid = await _gameRepository.isRoomCodeValid(event.roomCode);
     isRoomCodeValid.fold(
       (failure) => emit(GameRoomCodeInvalid()),
       (joinable) {
         if (joinable) {
-          loadLobby(event.roomCode, emit);
+          codeValid = true;
         }
         else {
           emit(GameRoomCodeInvalid());
         }
       }
+    );
+
+    // Check if user is logged in
+    final logedInResult = _gameRepository.isUserLoggedIn();
+    logedInResult.fold(
+      (failure) async {
+        emit(GameUserNotLoggedIn());
+      },
+      (user) {
+        if (codeValid) {
+          add(JoinGame(event.roomCode, user));
+        }
+      },
     );
   }
 
@@ -53,9 +61,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _gameRepository.exit();
   }
 
-  void loadLobby(String roomCode, Emitter<GameState> emit) async{
+  void _joinGame(JoinGame event, Emitter<GameState> emit) async{
+    _user = event.user;
     emit(GameLobbyLoading(_user));
-    final streamResult = await _gameRepository.joinRoom(roomCode);
+    final streamResult = await _gameRepository.joinRoom(event.roomCode);
     streamResult.fold(
       (failure) {
         emit(GameNetworkError());
