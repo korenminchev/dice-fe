@@ -183,7 +183,10 @@ class _GameLobbyState extends State<GameLobby> {
           ),
           const Expanded(child: SizedBox()),
           if (widget.error != null)
-            Text(widget.error!, style: const TextStyle(color: Colors.red, fontSize: 18)),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(widget.error!, style: const TextStyle(color: Colors.red, fontSize: 18)),
+            ),
           if (widget.readyLoading)
             const CircularProgressIndicator.adaptive()
           else  

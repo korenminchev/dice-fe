@@ -31,7 +31,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       appBar: AppBar(
         title: const DiceAppBarTitle(),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 16),
@@ -162,7 +162,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w300
               ),
             ),
-            const Expanded(child: SizedBox()),
+            const SizedBox(height: 64),
             if (loading)
               const CircularProgressIndicator.adaptive(),
             if (!loading)

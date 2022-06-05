@@ -88,7 +88,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             emit((state as GameLobbyLoaded).update(message));
           }
           else {
-            emit(GameLobbyLoaded.fromMessage(message));
+            emit(GameLobbyLoaded.fromMessage(message, _user));
           }
         }
         else if (message is ReadyConfirmation) {

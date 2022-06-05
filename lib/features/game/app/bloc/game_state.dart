@@ -32,12 +32,12 @@ class GameLobbyLoaded extends GameState {
   final String? error;
   GameLobbyLoaded({required this.users, required this.rules, this.userReady = false, this.readyLoading = false, this.error});
 
-  GameLobbyLoaded.fromMessage(LobbyUpdate message) :
+  GameLobbyLoaded.fromMessage(LobbyUpdate message, DiceUser currentUser) :
     users = message.players ?? [],
     rules = message.rules!,
-    userReady = false,
+    userReady = (message.players!.firstWhere((player) => player.id == currentUser.id)).ready!,
     readyLoading = false,
-    error = ''
+    error = null
     ;
 
   GameLobbyLoaded update(LobbyUpdate update) {
@@ -59,7 +59,7 @@ class GameLobbyLoaded extends GameState {
       rules: rules ?? this.rules,
       userReady: userReady ?? this.userReady,
       readyLoading: readyLoading ?? this.readyLoading,
-      error: error ?? this.error,
+      error: error,
     );
   }
 

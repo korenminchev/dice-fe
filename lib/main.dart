@@ -66,7 +66,6 @@ class DiceApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
-        primarySwatch: Colors.purple,
         brightness: Brightness.dark,
         fontFamily: "Lato",
         splashFactory: NoSplash.splashFactory,

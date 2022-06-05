@@ -49,48 +49,49 @@ class HomePage extends StatelessWidget {
         }
       }),
       builder: (context, state) {
-        return Center(
-          child: (state is Loading) ? const CircularProgressIndicator()
-          : Column(
-            children: <Widget>[
-              const SizedBox(height: 32),
-              const Text(
-                "Dice",
-                style: TextStyle(fontFamily: "Hurricane", fontSize: 96),
-              ),
-              SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: Image.asset("assets/images/dice_logo.png")),
-              const SizedBox(height: 56),
-              PrimaryButton(
-                text: 'Join Game',
-                onTap: () {
-                  BlocProvider.of<HomeBloc>(context).add(JoinGame());
-                },
-              ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                text: 'Create Game',
-                onTap: () {
-                  BlocProvider.of<HomeBloc>(context).add(CreateGameButton());
-                },
-              ),
-              const SizedBox(height: 32),
-              GestureDetector(
-                onTap: () {
-                  BlocProvider.of<HomeBloc>(context).add(GameRulesEvent());
-                },
-                child: const Text(
-                  "Game rules",
-                  style: TextStyle(
-                    fontSize: 20,
+        return (state is Loading) ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(height: 32, width: 1000),
+                const Text(
+                  "Dice",
+                  style: TextStyle(fontFamily: "Hurricane", fontSize: 96),
+                ),
+                SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Image.asset("assets/images/dice_logo.png")),
+                const SizedBox(height: 56),
+                PrimaryButton(
+                  text: 'Join Game',
+                  onTap: () {
+                    BlocProvider.of<HomeBloc>(context).add(JoinGame());
+                  },
+                ),
+                const SizedBox(height: 16),
+                PrimaryButton(
+                  text: 'Create Game',
+                  onTap: () {
+                    BlocProvider.of<HomeBloc>(context).add(CreateGameButton());
+                  },
+                ),
+                const SizedBox(height: 32),
+                GestureDetector(
+                  onTap: () {
+                    BlocProvider.of<HomeBloc>(context).add(GameRulesEvent());
+                  },
+                  child: const Text(
+                    "Game rules",
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16)
-            ],
-          ),
+                const SizedBox(height: 16)
+              ],
+            ),
         );
       }
     );
