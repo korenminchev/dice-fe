@@ -42,6 +42,7 @@ dependencies:
   web_socket_channel: ^2.2.0
   get_it: ^7.2.0
   equatable: ^2.0.3
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,8 @@ flutter:
 
   assets:
     - assets/images/dice_logo.png
+    - assets/images/initial_rules.svg
+    - assets/images/initial_rules.png
 
   fonts:
     - family: Lato
