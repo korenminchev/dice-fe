@@ -1,7 +1,7 @@
 import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/pages/game_page.dart';
-import 'package:dice_fe/features/game_rules/app/pages/game_rules_page.dart';
+import 'package:dice_fe/features/game_rules/game_rules_page.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
 import 'package:dice_fe/injection_container.dart';
