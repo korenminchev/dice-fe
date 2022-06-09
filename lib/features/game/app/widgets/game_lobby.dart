@@ -84,14 +84,14 @@ class _GameLobbyState extends State<GameLobby> {
                       },
                       hint: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text("Who sits on your left?"),
+                        child: const Text("Who sits on your left?"),
                       ),
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 3 * AppUI.heightUnit),
+              SizedBox(width: 3 * AppUI.widthUnit),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -105,7 +105,7 @@ class _GameLobbyState extends State<GameLobby> {
                         .map((user) => DropdownMenuItem(
                           value: user,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
                             child: Text(user.name)
                           ),
                         ))
@@ -115,8 +115,8 @@ class _GameLobbyState extends State<GameLobby> {
                         setState(() {});
                       },
                       hint: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text("Who sits on your left?"),
+                        padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
+                        child: const Text("Who sits on your right?"),
                       ),
                       borderRadius: BorderRadius.circular(5),
                     ),
