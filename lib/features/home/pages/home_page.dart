@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/features/create_game/create_game_page.dart';
@@ -15,6 +16,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Scaffold(
       drawer: const DiceDrawer(),
       appBar: AppBar(),
@@ -50,34 +52,34 @@ class HomePage extends StatelessWidget {
       }),
       builder: (context, state) {
         return (state is Loading) ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 32, width: 1000),
+                const SizedBox(height: 32),
                 const Text(
                   "Dice",
                   style: TextStyle(fontFamily: "Hurricane", fontSize: 96),
                 ),
                 SizedBox(
-                    width: 200,
-                    height: 200,
+                    width: 25 * AppUI.widthUnit,
+                    height: 25 * AppUI.heightUnit,
                     child: Image.asset("assets/images/dice_logo.png")),
-                const SizedBox(height: 56),
+                SizedBox(height: 7 * AppUI.heightUnit),
                 PrimaryButton(
                   text: 'Join Game',
                   onTap: () {
                     BlocProvider.of<HomeBloc>(context).add(JoinGame());
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 2 * AppUI.heightUnit),
                 PrimaryButton(
                   text: 'Create Game',
                   onTap: () {
                     BlocProvider.of<HomeBloc>(context).add(CreateGameButton());
                   },
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 4 * AppUI.heightUnit),
                 GestureDetector(
                   onTap: () {
                     BlocProvider.of<HomeBloc>(context).add(GameRulesEvent());
@@ -89,10 +91,10 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16)
+                SizedBox(height: 2 * AppUI.heightUnit),
               ],
             ),
-        );
+          );
       }
     );
   }

@@ -19,9 +19,10 @@ class DiceTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return SizedBox(
-      width: 288,
-      height: 56,
+      width: AppUI.widthUnit * 36,
+      height: AppUI.heightUnit * 7,
       child: TextField(
         onChanged: onChanged,
         controller: controller,

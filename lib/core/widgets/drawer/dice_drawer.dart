@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'drawer_item.dart';
@@ -8,6 +9,7 @@ class DiceDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return SizedBox(
       width: width,
       child: Drawer(

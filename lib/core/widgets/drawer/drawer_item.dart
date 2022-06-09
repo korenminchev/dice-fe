@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:flutter/material.dart';
 
 class DrawerItem extends StatelessWidget {
@@ -40,7 +41,7 @@ class DrawerItem extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 2.5 * AppUI.heightUnit),
         ],
       ),
     );

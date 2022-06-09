@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 class PrimaryButton extends StatelessWidget {
   final void Function()? onTap;
   final String text;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   const PrimaryButton(
     {required this.text,
     required this.onTap,
-    this.width = 288,
-    this.height = 56,
+    this.width,
+    this.height,
     Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return TextButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(
@@ -28,8 +29,8 @@ class PrimaryButton extends StatelessWidget {
       ),
       onPressed: onTap,
       child: SizedBox(
-        width: width,
-        height: height,
+        width: width ?? AppUI.widthUnit * 36,
+        height: height ?? AppUI.heightUnit * 7,
         child: Center(
           child: Text(
             text,

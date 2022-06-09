@@ -27,6 +27,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Scaffold(
       appBar: AppBar(
         title: const DiceAppBarTitle(),
@@ -34,7 +35,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 16),
+            SizedBox(height: 2 * AppUI.heightUnit),
             const Text(
               "Create Game",
               style: TextStyle(
@@ -42,14 +43,14 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w700
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 2 * AppUI.heightUnit),
             const Text(
               "Game settings",
               style: TextStyle(
                 fontSize: 24
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 2 * AppUI.heightUnit),
             const Text(
               "Dice count",
               style: TextStyle(
@@ -57,7 +58,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w700
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppUI.heightUnit),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: AppUI.lightGrayColor),
@@ -84,9 +85,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 24,
-            ),
+            SizedBox(height: 3 * AppUI.heightUnit),
             const Text(
               "Advanced rules",
               style: TextStyle(
@@ -94,7 +93,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w700
               )
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppUI.heightUnit),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -104,7 +103,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     rules.pasoAllowed = newValue;
                   })
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: AppUI.heightUnit),
                 const Text(
                   "Paso",
                   style: TextStyle(
@@ -114,7 +113,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 )
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppUI.heightUnit),
             const Text(
               "Player can skip a bet once per round\n"
               "and pass the previous bet to the\n"
@@ -128,7 +127,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w300
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 3 * AppUI.heightUnit),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -138,7 +137,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     rules.exactAllowed = newValue;
                   })
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: AppUI.heightUnit),
                 const Text(
                   "Exactly",
                   style: TextStyle(
@@ -148,7 +147,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 )
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppUI.heightUnit),
             const Text(
               "If a player thinks that the bet has the\n"
               "exact value of dice he can use the\n"
@@ -162,7 +161,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w300
               ),
             ),
-            const SizedBox(height: 64),
+            SizedBox(height: 8 * AppUI.heightUnit),
             if (loading)
               const CircularProgressIndicator.adaptive(),
             if (!loading)
@@ -182,7 +181,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                   );
                 }
               ),
-            const SizedBox(height: 32)
+            SizedBox(height: 4 * AppUI.heightUnit),
           ],
         ),
       ),

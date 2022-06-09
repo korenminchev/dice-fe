@@ -34,16 +34,17 @@ class _GameLobbyState extends State<GameLobby> {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 32),
+          SizedBox(height: 4 * AppUI.heightUnit),
           Text(
             "Room ${widget.roomCode}",
             style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w700)
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 4 * AppUI.heightUnit),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -55,10 +56,10 @@ class _GameLobbyState extends State<GameLobby> {
           ),
           const Expanded(child: SizedBox()),
           const Text("Who sits next to you?", style: TextStyle(fontSize: 18)),
-          const SizedBox(height: 16),
+          SizedBox(height: 2 * AppUI.heightUnit),
           Row(
             children: [
-              const SizedBox(width: 16),
+              SizedBox(width: 2 * AppUI.widthUnit),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -90,7 +91,7 @@ class _GameLobbyState extends State<GameLobby> {
                   ),
                 ),
               ),
-              const SizedBox(width: 24),
+              SizedBox(height: 3 * AppUI.heightUnit),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -122,15 +123,15 @@ class _GameLobbyState extends State<GameLobby> {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 2 * AppUI.widthUnit),
             ],
           ),
-          const SizedBox(height: 64),
+          SizedBox(height: 8 * AppUI.heightUnit),
           const Text("Game settings", style: TextStyle(fontSize: 24)),
-          const SizedBox(height: 16),
+          SizedBox(height: 2 * AppUI.heightUnit),
           Row(
             children: [
-              const SizedBox(width: 32),
+              SizedBox(width: 4 * AppUI.widthUnit),
               Expanded(
                 child: Column(
                   children: [
@@ -138,7 +139,7 @@ class _GameLobbyState extends State<GameLobby> {
                       "Dice count",
                       style: TextStyle(fontSize:18, fontWeight: FontWeight.w300)
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: AppUI.heightUnit),
                     Text(
                       "${widget.rules.initialDiceCount}",
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)
@@ -146,7 +147,7 @@ class _GameLobbyState extends State<GameLobby> {
                   ],
                 ),
               ),
-              const SizedBox(width: 32),
+              SizedBox(width: 4 * AppUI.widthUnit),
               Expanded(
                 child: Column(
                   children: [
@@ -154,7 +155,7 @@ class _GameLobbyState extends State<GameLobby> {
                       "Paso",
                       style: TextStyle(fontSize:18, fontWeight: FontWeight.w300)
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: AppUI.heightUnit),
                     Text(
                       widget.rules.pasoAllowed! ? "ON" : "OFF",
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)
@@ -162,7 +163,7 @@ class _GameLobbyState extends State<GameLobby> {
                   ],
                 ),
               ),
-              const SizedBox(width: 32),
+              SizedBox(width: 4 * AppUI.widthUnit),
               Expanded(
                 child: Column(
                   children: [
@@ -170,7 +171,7 @@ class _GameLobbyState extends State<GameLobby> {
                       "Exactly",
                       style: TextStyle(fontSize:18, fontWeight: FontWeight.w300)
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: AppUI.heightUnit),
                     Text(
                       widget.rules.exactAllowed! ? "ON" : "OFF",
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)
@@ -178,7 +179,7 @@ class _GameLobbyState extends State<GameLobby> {
                   ],
                 ),
               ),
-              const SizedBox(width: 32)
+              SizedBox(width: 4 * AppUI.widthUnit)
             ]
           ),
           const Expanded(child: SizedBox()),
@@ -193,12 +194,12 @@ class _GameLobbyState extends State<GameLobby> {
             PrimaryButton(
               text: widget.userReady ? "Unready" : "Ready",
               width: MediaQuery.of(context).size.width * 0.8,
-              height: 64,
+              height: 8 * AppUI.heightUnit,
               onTap: (leftUser != null && rightUser != null)
                 ? () => widget.onReady(!widget.userReady, leftUser!, rightUser!)
                 : null
             ),
-          const SizedBox(height: 32),
+          SizedBox(height: 4 * AppUI.heightUnit),
         ],
       ),
     );

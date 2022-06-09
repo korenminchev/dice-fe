@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/core/widgets/text_field.dart';
@@ -16,6 +17,7 @@ class JoinPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Scaffold(
       drawer: const DiceDrawer(),
       appBar: AppBar(
@@ -42,11 +44,11 @@ class JoinPage extends StatelessWidget {
         return Center(
           child: Column(
             children: [
-              const SizedBox(height: 16),
+              SizedBox(height: 2 * AppUI.heightUnit),
               const Text(
                 "Join Game",
                 style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 40),
+              SizedBox(height: 5 * AppUI.heightUnit),
               DiceTextField(
                 textAlign: TextAlign.center,
                 textInputFormatters: [
@@ -58,7 +60,7 @@ class JoinPage extends StatelessWidget {
                   BlocProvider.of<JoinBloc>(context).add(TypingEvent(roomCode));
                 }
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: 5 * AppUI.heightUnit),
               PrimaryButton(
                 text: "Join Game",
                 onTap: state.joinAllowed 
@@ -69,7 +71,7 @@ class JoinPage extends StatelessWidget {
                     )) 
                   : null,
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: 5 * AppUI.heightUnit),
               const Text(
                 "Friends Active Games",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
