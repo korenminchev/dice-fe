@@ -22,17 +22,50 @@ class GameLobbyLoading extends GameState {
 
 class GameNetworkError extends GameState {}
 
-class GameStarted extends GameState {}
+class GameReady extends GameState {
+  final DiceUser currentUser;
+  final GameRules rules;
+  final List<DiceUser> players;
+  final List<int> dice;
 
-class GameLobbyLoaded extends GameState {
+  GameReady(this.currentUser, this.rules, this.players, this.dice);
+
+  GameReady.fromMessage(GameStart message, this.currentUser)
+      : rules = message.rules,
+        players = [],
+        dice = [];
+
+  GameReady update(LobbyUpdate message) {
+    return GameReady(
+      currentUser,
+      rules,
+      message.players ?? players,
+      const [],
+    );
+  }
+
+  GameState updateDice(RoundStart message) {
+    return GameReady(
+      currentUser,
+      rules,
+      players,
+      message.dice,
+    );
+  }
+
+  @override
+  List<Object> get props => [currentUser, rules, players, dice];
+}
+
+class GameLobbyReady extends GameState {
   final List<DiceUser> users;
   final GameRules rules;
   final bool userReady;
   final bool readyLoading;
   final String? error;
-  GameLobbyLoaded({required this.users, required this.rules, this.userReady = false, this.readyLoading = false, this.error});
+  GameLobbyReady({required this.users, required this.rules, this.userReady = false, this.readyLoading = false, this.error});
 
-  GameLobbyLoaded.fromMessage(LobbyUpdate message, DiceUser currentUser) :
+  GameLobbyReady.fromMessage(LobbyUpdate message, DiceUser currentUser) :
     users = message.players ?? [],
     rules = message.rules!,
     userReady = (message.players!.firstWhere((player) => player.id == currentUser.id)).ready!,
@@ -40,8 +73,8 @@ class GameLobbyLoaded extends GameState {
     error = null
     ;
 
-  GameLobbyLoaded update(LobbyUpdate update) {
-    return GameLobbyLoaded(
+  GameLobbyReady update(LobbyUpdate update) {
+    return GameLobbyReady(
       users: update.players ?? users,
       rules: rules.update(rules),
       readyLoading: readyLoading,
@@ -50,14 +83,14 @@ class GameLobbyLoaded extends GameState {
     );
   }
 
-  GameLobbyLoaded copyWith({
+  GameLobbyReady copyWith({
     List<DiceUser>? users,
     GameRules? rules,
     bool? userReady,
     bool? readyLoading,
     String? error,
   }) {
-    return GameLobbyLoaded(
+    return GameLobbyReady(
       users: users ?? this.users,
       rules: rules ?? this.rules,
       userReady: userReady ?? this.userReady,

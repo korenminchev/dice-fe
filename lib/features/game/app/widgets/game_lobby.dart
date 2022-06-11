@@ -60,66 +60,62 @@ class _GameLobbyState extends State<GameLobby> {
           Row(
             children: [
               SizedBox(width: 2 * AppUI.widthUnit),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppUI.lightGrayColor),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      value: leftUser,
-                      items: widget.users
-                        .map((user) => DropdownMenuItem(
-                          value: user,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(user.name)
-                          ),
-                        ))
-                        .toList(),
-                      onChanged: widget.userReady ? null : (user) {
-                        leftUser = user as DiceUser;
-                        setState(() {});
-                      },
-                      hint: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: const Text("Who sits on your left?"),
-                      ),
-                      borderRadius: BorderRadius.circular(5),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppUI.lightGrayColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    value: leftUser,
+                    items: widget.users
+                      .map((user) => DropdownMenuItem(
+                        value: user,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(user.name)
+                        ),
+                      ))
+                      .toList(),
+                    onChanged: widget.userReady ? null : (user) {
+                      leftUser = user as DiceUser;
+                      setState(() {});
+                    },
+                    hint: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text("Who sits on your left?"),
                     ),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
               ),
               SizedBox(width: 3 * AppUI.widthUnit),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppUI.lightGrayColor),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      value: rightUser,
-                      items: widget.users
-                        .map((user) => DropdownMenuItem(
-                          value: user,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
-                            child: Text(user.name)
-                          ),
-                        ))
-                        .toList(),
-                      onChanged: widget.userReady ? null : (user) {
-                        rightUser = user as DiceUser;
-                        setState(() {});
-                      },
-                      hint: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
-                        child: const Text("Who sits on your right?"),
-                      ),
-                      borderRadius: BorderRadius.circular(5),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppUI.lightGrayColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    value: rightUser,
+                    items: widget.users
+                      .map((user) => DropdownMenuItem(
+                        value: user,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
+                          child: Text(user.name)
+                        ),
+                      ))
+                      .toList(),
+                    onChanged: widget.userReady ? null : (user) {
+                      rightUser = user as DiceUser;
+                      setState(() {});
+                    },
+                    hint: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
+                      child: const Text("Who sits on your right?"),
                     ),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
               ),

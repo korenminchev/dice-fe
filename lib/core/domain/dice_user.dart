@@ -14,13 +14,16 @@ class DiceUser {
   final String? playerOnLeft;
   @JsonKey(name: 'player_on_right')
   final String? playerOnRight;
+  @JsonKey(name: 'current_dice_count')
+  final int? currentDiceCount;
 
   DiceUser({
     required this.id,
     required this.name,
     this.ready,
     this.playerOnLeft,
-    this.playerOnRight
+    this.playerOnRight,
+    this.currentDiceCount,
   });
 
   factory DiceUser.fromJson(Map<String, dynamic> json) => _$DiceUserFromJson(json);

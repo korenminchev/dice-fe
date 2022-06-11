@@ -80,6 +80,7 @@ flutter:
 
   assets:
     - assets/images/dice_logo.png
+    - assets/images/Dice/Big/
 
   fonts:
     - family: Lato

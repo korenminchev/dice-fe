@@ -80,18 +80,34 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _websocketStream,
       onData: (message) {
         if (message is GameStart) {
-          emit(GameStarted());
+          print("GameReady from message");
+          emit(GameReady.fromMessage(message, _user));
         }
+
+        if (message is RoundStart) {
+          print("GameReady update dice");
+          emit((state as GameReady).updateDice(message));
+        }
+
         else if (message is LobbyUpdate) {
-          if (state is GameLobbyLoaded) {
-            emit((state as GameLobbyLoaded).update(message));
+
+          if (state is GameLobbyReady) {
+            print("LobbyUpdate update");
+            emit((state as GameLobbyReady).update(message));
           }
+
+          if (state is GameReady) {
+            print("GameReady update");
+            emit((state as GameReady).update(message));
+          }
+
           else {
-            emit(GameLobbyLoaded.fromMessage(message, _user));
+            print("LobbyUpdate from message");
+            emit(GameLobbyReady.fromMessage(message, _user));
           }
         }
         else if (message is ReadyConfirmation) {
-          emit((state as GameLobbyLoaded).copyWith(
+          emit((state as GameLobbyReady).copyWith(
             readyLoading: false,
             userReady: message.success,
             error: message.error
@@ -104,10 +120,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _onReady(ReadyEvent event, Emitter<GameState> emit) {
     _gameRepository.sendMessage(PlayerReady(event.isReady, event.userOnLeft.id, event.userOnRight.id));
     if (event.isReady) {
-      emit((state as GameLobbyLoaded).copyWith(readyLoading: true));
+      emit((state as GameLobbyReady).copyWith(readyLoading: true));
     }
     else {
-      emit((state as GameLobbyLoaded).copyWith(userReady: false));
+      emit((state as GameLobbyReady).copyWith(userReady: false));
     }
   }
 }

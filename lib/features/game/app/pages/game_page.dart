@@ -2,6 +2,7 @@ import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
+import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
 import 'package:dice_fe/features/game/app/widgets/game_lobby.dart';
@@ -23,6 +24,7 @@ class GamePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Scaffold(
       drawer: const DiceDrawer(),
       appBar: AppBar(
@@ -132,7 +134,7 @@ class GamePage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator.adaptive());
         }
 
-        if (state is GameLobbyLoaded) {
+        if (state is GameLobbyReady) {
           return GameLobby(
             roomCode: roomCode,
             users: state.users,
@@ -142,6 +144,60 @@ class GamePage extends StatelessWidget {
             userReady: state.userReady,
             readyLoading: state.readyLoading,
             error: state.error,
+          );
+        }
+
+        if (state is GameReady) {
+          int totalDiceCount = state.players.map((player) => player.currentDiceCount).reduce((a, b) => a! + b!)!;
+          print(state.toString());
+          print(state.dice);
+          print(state.players);
+          if (state.dice.isEmpty || state.players.isEmpty) {
+            
+            return const Center(child: CircularProgressIndicator.adaptive());
+          }
+          return Center(
+            child: Column(
+              children: [
+                SizedBox(height: 3 * AppUI.heightUnit),
+                Text(
+                  "Dice Count - $totalDiceCount",
+                ),
+                SizedBox(height: 3 * AppUI.heightUnit),
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 3 * AppUI.widthUnit,
+                  mainAxisSpacing: AppUI.heightUnit,
+                  padding: EdgeInsets.symmetric(horizontal: 4 * AppUI.widthUnit),
+                  children: state.players.map(
+                    (player) => Text("${player.name} - ${player.currentDiceCount}"))
+                    .toList()
+                ),
+                SizedBox(height: 4 * AppUI.heightUnit),
+                const Text("Your Dice"),
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 3 * AppUI.widthUnit,
+                  mainAxisSpacing: AppUI.heightUnit,
+                  padding: EdgeInsets.symmetric(horizontal: 4 * AppUI.widthUnit),
+                  children: state.dice.map(
+                    (dice) => Container(
+                      width: 11 * AppUI.widthUnit,
+                      height: 11 * AppUI.heightUnit,
+                      child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png")
+                    ))
+                    .toList()
+                ),
+                SizedBox(height: 15 * AppUI.heightUnit),
+                PrimaryButton(
+                  text: "Lie!",
+                  onTap: () {
+                    print("Lie!");
+                  })
+              ],
+            ),
           );
         }
 

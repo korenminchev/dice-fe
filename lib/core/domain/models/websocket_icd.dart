@@ -6,6 +6,7 @@ part 'websocket_icd.g.dart';
 
 enum Event {
   gameStart,
+  roundStart,
   lobbyUpdate,
   playerReady,
   playerLeave,
@@ -14,6 +15,7 @@ enum Event {
 }
 
 Map<String, Event> incomingEventMap = {
+  "round_start" : Event.roundStart,
   "game_start": Event.gameStart,
   "game_update": Event.lobbyUpdate,
   "ready_confirm": Event.readyConfirmation
@@ -31,7 +33,9 @@ abstract class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     switch (incomingEventMap[json['event']]) {
       case Event.gameStart:
-        return GameStart();
+        return GameStart.fromJson(json);
+      case Event.roundStart:
+        return RoundStart.fromJson(json);
       case Event.lobbyUpdate:
         return LobbyUpdate.fromJson(json);
       case Event.readyConfirmation:
@@ -46,13 +50,23 @@ abstract class Message {
 
 @JsonSerializable()
 class GameStart extends Message {
-  GameStart() : super(Event.gameStart);
+  GameStart(this.rules) : super(Event.gameStart);
+  GameRules rules;
 
   factory GameStart.fromJson(Map<String, dynamic> json) => _$GameStartFromJson(json);
   @override
   Map<String, dynamic> toJson() => _$GameStartToJson(this);
 }
 
+@JsonSerializable()
+class RoundStart extends Message {
+  RoundStart({this.dice = const []}) : super(Event.none);
+  List<int> dice;
+
+  factory RoundStart.fromJson(Map<String, dynamic> json) => _$RoundStartFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$RoundStartToJson(this);
+}
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
   LobbyUpdate({
@@ -63,6 +77,7 @@ class LobbyUpdate extends Message {
   List<DiceUser>? players;
   GameRules? rules;
   DiceUser? admin;
+  List<int>? dice;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);
   @override
