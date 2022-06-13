@@ -24,17 +24,28 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   @override
-  Future<Either<GameFailure, bool>> isRoomCodeValid(String roomCode) async {
+  Future<Either<GameFailure, bool>> isRoomCodeValid(String roomCode, String playerId) async {
     if (roomCode.length != 4 || !RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
       return Future.value(Left(RoomCodeInvalid()));
     }
 
-    final isRoomCodeJoinableBackendResult = await _backend.isRoomCodeJoinable(roomCode);
-    return isRoomCodeJoinableBackendResult.fold(
-      (failure) {
-        return Left(RoomCodeInvalid());
+    final results = await Future.wait([
+      _backend.isPlayerInGame(roomCode, playerId),
+      _backend.isRoomCodeJoinable(roomCode),
+    ]);
+
+    return results[0].fold(
+      (failure) => Left(NetworkError()),
+      (playerInGame) {
+        if (playerInGame as bool) {
+          return Right(playerInGame);
+        }
+
+        return results[1].fold(
+          (failure) => Left(NetworkError()),
+          (gameProgression) => Right(gameProgression == GameProgression.lobby),
+        );
       },
-      (isRoomCodeJoinable) => Right(isRoomCodeJoinable)
     );
   }
 

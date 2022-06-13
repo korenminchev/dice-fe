@@ -120,7 +120,7 @@ class GamePage extends StatelessWidget {
             CreateUserPage.routeName,
             arguments: (DiceUser createdUser) {
               Navigator.pop(context);
-              gameBloc.add(JoinGame(roomCode, createdUser));
+              gameBloc.add(VerifyParams(roomCode));
             });
         }
       },

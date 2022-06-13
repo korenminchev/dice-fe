@@ -1,5 +1,6 @@
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
+import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'websocket_icd.g.dart';
@@ -67,17 +68,26 @@ class RoundStart extends Message {
   @override
   Map<String, dynamic> toJson() => _$RoundStartToJson(this);
 }
+
+GameProgression? _gameProgressionFromString(String? value) {
+  if (value == null) return null;
+  return gameProgressionFromString[value]!;
+}
+
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
   LobbyUpdate({
     this.players,
     this.rules,
-    this.admin
+    this.admin,
+    this.progression,
   }) : super(Event.lobbyUpdate);
   List<DiceUser>? players;
   GameRules? rules;
   DiceUser? admin;
   List<int>? dice;
+  @JsonKey(fromJson: (_gameProgressionFromString))
+  GameProgression? progression;
 
   factory LobbyUpdate.fromJson(Map<String, dynamic> json) => _$LobbyUpdateFromJson(json);
   @override

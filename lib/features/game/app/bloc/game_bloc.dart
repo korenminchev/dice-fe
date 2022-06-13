@@ -27,31 +27,32 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   void _onVerifyParams(VerifyParams event, Emitter<GameState> emit) async {
     bool codeValid = false;
-    // Check room code is valid
-    final isRoomCodeValid = await _gameRepository.isRoomCodeValid(event.roomCode);
-    isRoomCodeValid.fold(
-      (failure) => emit(GameRoomCodeInvalid()),
-      (joinable) {
-        if (joinable) {
-          codeValid = true;
-        }
-        else {
-          emit(GameRoomCodeInvalid());
-        }
-      }
-    );
-
     // Check if user is logged in
     final logedInResult = _gameRepository.isUserLoggedIn();
     logedInResult.fold(
       (failure) async {
         emit(GameUserNotLoggedIn());
+        return;
       },
       (user) {
-        if (codeValid) {
-          add(JoinGame(event.roomCode, user));
-        }
+        _user = user;
+        // Check if room code is valid
       },
+    );
+
+
+    // Check room code is valid
+    final isRoomCodeValid = await _gameRepository.isRoomCodeValid(event.roomCode, _user.id);
+    isRoomCodeValid.fold(
+      (failure) => emit(GameRoomCodeInvalid()),
+      (joinable) {
+        if (joinable) {
+            add(JoinGame(event.roomCode, _user));
+        }
+        else {
+          emit(GameRoomCodeInvalid());
+        }
+      }
     );
   }
 
@@ -61,7 +62,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _joinGame(JoinGame event, Emitter<GameState> emit) async{
-    _user = event.user;
     emit(GameLobbyLoading(_user));
     final streamResult = await _gameRepository.joinRoom(event.roomCode);
     streamResult.fold(
@@ -102,6 +102,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           }
 
           else {
+            if (message.progression == GameProgression.inGame) {
+              emit(GameReady(
+                _user,
+                message.rules!,
+                message.players!,
+                const [],
+              ));
+              return;
+            }
             print("LobbyUpdate from message");
             emit(GameLobbyReady.fromMessage(message, _user));
           }

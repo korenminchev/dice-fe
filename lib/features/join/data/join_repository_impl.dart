@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/features/game/domain/repositories/game_repository.dart' as game;
 import 'package:dice_fe/features/join/domain/join_repository.dart';
 import 'package:dice_fe/features/join/domain/room_info.dart';
 
@@ -35,7 +36,7 @@ class JoinRepositoryImpl implements JoinRepository {
       (failure) {
         return Left(RoomCodeInvalid());
       },
-      (isRoomCodeJoinable) => Right(isRoomCodeJoinable)
+      (progression) => Right(progression == game.GameProgression.lobby)
     );
   }
 }

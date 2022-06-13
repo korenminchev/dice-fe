@@ -61,12 +61,14 @@ class _GameLobbyState extends State<GameLobby> {
             children: [
               SizedBox(width: 2 * AppUI.widthUnit),
               Container(
+                width: 27.5 * AppUI.widthUnit,
                 decoration: BoxDecoration(
                   border: Border.all(color: AppUI.lightGrayColor),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton(
+                    isExpanded: true,
                     value: leftUser,
                     items: widget.users
                       .map((user) => DropdownMenuItem(
@@ -91,12 +93,14 @@ class _GameLobbyState extends State<GameLobby> {
               ),
               SizedBox(width: 3 * AppUI.widthUnit),
               Container(
+                width: 27.5 * AppUI.widthUnit,
                 decoration: BoxDecoration(
                   border: Border.all(color: AppUI.lightGrayColor),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton(
+                    isExpanded: true,
                     value: rightUser,
                     items: widget.users
                       .map((user) => DropdownMenuItem(

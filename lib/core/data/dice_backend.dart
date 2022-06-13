@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
+import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -112,12 +113,30 @@ class DiceBackend {
     );
   }
 
-  Future<Either<ServerFailure, bool>> isRoomCodeJoinable(String roomCode) async {
+  Future<Either<ServerFailure, GameProgression>> isRoomCodeJoinable(String roomCode) async {
     final response = await _get("games/$roomCode/state");
     return response.fold(
       (failure) => Left(failure),
       (response) {
-        return Right(json.decode(response.body) == "lobby");
+        GameProgression? progression = gameProgressionFromString[json.decode(response.body)];
+        if (progression == null) {
+          return Left(ServerFailure(response.statusCode, "Communication Error"));
+        }
+        return Right(progression);
+      }
+    );
+  }
+
+  Future<Either<ServerFailure, bool>> isPlayerInGame(String roomCode, String playerId) async {
+    final response = await _get("games/$roomCode/$playerId");
+    return response.fold(
+      (failure) => Left(failure),
+      (response) {
+        final result = json.decode(response.body);
+        if (result.runtimeType != bool) {
+          return Left(ServerFailure(response.statusCode, "Communication Error"));
+        }
+        return Right(result as bool);
       }
     );
   }
