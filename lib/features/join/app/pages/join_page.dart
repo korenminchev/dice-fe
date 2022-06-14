@@ -60,21 +60,33 @@ class JoinPage extends StatelessWidget {
                   BlocProvider.of<JoinBloc>(context).add(TypingEvent(roomCode));
                 }
               ),
-              SizedBox(height: 5 * AppUI.heightUnit),
-              PrimaryButton(
-                text: "Join Game",
-                onTap: state.joinAllowed 
-                  ? () => BlocProvider.of<JoinBloc>(context).add(
-                    JoinRequestEvent(
-                      roomCode: _joinRoomCodeController.text,
-                      joinAllowed: true
-                    )) 
-                  : null,
-              ),
-              SizedBox(height: 5 * AppUI.heightUnit),
-              const Text(
-                "Friends Active Games",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
+              if (state is! JoinFailureState)
+                SizedBox(height: 5 * AppUI.heightUnit),
+              if (state is JoinFailureState)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 3 * AppUI.heightUnit),
+                  child: Text(
+                    state.errorMessage,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700
+                    ),
+                  ),
+                ),
+              if (state is JoinLoading) 
+                const CircularProgressIndicator.adaptive(),
+              if (state is! JoinLoading)
+                PrimaryButton(
+                  text: "Join Game",
+                  onTap: state.joinAllowed 
+                    ? () => BlocProvider.of<JoinBloc>(context).add(
+                      JoinRequestEvent(
+                        roomCode: _joinRoomCodeController.text,
+                        joinAllowed: true
+                      )) 
+                    : null,
+                ),
             ],
           ),
         );

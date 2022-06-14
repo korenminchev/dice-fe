@@ -36,7 +36,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       },
       (user) {
         _user = user;
-        // Check if room code is valid
       },
     );
 

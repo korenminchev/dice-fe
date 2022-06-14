@@ -5,7 +5,8 @@ import 'package:dice_fe/features/join/domain/room_info.dart';
 abstract class JoinRepository {
   Future<Either<JoinFailure, void>> join(String roomCode);
   Future<Either<JoinFailure, List<RoomInfo>>> getFriendsActiveRooms();
-  Future<Either<JoinFailure, bool>> isRoomCodeValid(String roomCode);
+  bool isRoomCodeValid(String roomCode);
+  Future<Either<JoinFailure, bool>> isRoomCodeJoinable(String roomCode);
 }
 
 class JoinFailure extends Failure{}

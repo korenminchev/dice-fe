@@ -12,14 +12,18 @@ class JoinAllowed extends JoinState {
   const JoinAllowed() : super(joinAllowed: true);
 }
 
-class JoinFailure extends JoinState {
+class JoinFailureState extends JoinState {
   final String errorMessage;
 
-  const JoinFailure({this.errorMessage = 'Join failed due to an unknown error'});
+  const JoinFailureState({this.errorMessage = 'Join failed due to an unknown error'});
 }
 
 class JoinSuccess extends JoinState {
   final String roomCode;
 
   const JoinSuccess({required this.roomCode});
+}
+
+class JoinLoading extends JoinState {
+  const JoinLoading();
 }

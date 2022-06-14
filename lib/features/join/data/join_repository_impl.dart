@@ -26,15 +26,19 @@ class JoinRepositoryImpl implements JoinRepository {
   }
 
   @override
-  Future<Either<JoinFailure, bool>> isRoomCodeValid(String roomCode) async {
-    if (roomCode.length != 4 || !RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
-      return Future.value(Left(RoomCodeInvalid()));
-    }
+  bool isRoomCodeValid(String roomCode) {
+    return (roomCode.length == 4 && (int.tryParse(roomCode) != null));
+  }
 
+  @override
+  Future<Either<JoinFailure, bool>> isRoomCodeJoinable(String roomCode) async {
     final isRoomCodeJoinableBackendResult = await _backend.isRoomCodeJoinable(roomCode);
     return isRoomCodeJoinableBackendResult.fold(
       (failure) {
-        return Left(RoomCodeInvalid());
+        if (failure.statusCode == 404) {
+          return Left(RoomCodeInvalid());
+        }
+        return Left(JoinFailure());
       },
       (progression) => Right(progression == game.GameProgression.lobby)
     );

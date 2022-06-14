@@ -184,7 +184,6 @@ class GamePage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 4 * AppUI.widthUnit),
                   children: state.dice.map(
                     (dice) => Container(
-                      width: 11 * AppUI.widthUnit,
                       height: 11 * AppUI.heightUnit,
                       child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png")
                     ))
