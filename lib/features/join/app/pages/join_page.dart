@@ -58,13 +58,14 @@ class JoinPage extends StatelessWidget {
                 controller: _joinRoomCodeController,
                 onChanged: (roomCode) {
                   BlocProvider.of<JoinBloc>(context).add(TypingEvent(roomCode));
-                }
+                },
+                keyboardType: TextInputType.number,
               ),
               if (state is! JoinFailureState)
-                SizedBox(height: 5 * AppUI.heightUnit),
+                SizedBox(height: 6 * AppUI.heightUnit),
               if (state is JoinFailureState)
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 3 * AppUI.heightUnit),
+                  padding: EdgeInsets.symmetric(vertical: 1.8 * AppUI.heightUnit),
                   child: Text(
                     state.errorMessage,
                     style: const TextStyle(
