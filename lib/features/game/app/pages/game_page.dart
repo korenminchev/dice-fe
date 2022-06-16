@@ -130,7 +130,7 @@ class GamePage extends StatelessWidget {
               ),
               SizedBox(height: 2 * AppUI.heightUnit),
               Container(
-                width: 27.5 * AppUI.widthUnit,
+                width: 35 * AppUI.widthUnit,
                 decoration: BoxDecoration(
                   border: Border.all(color: AppUI.lightGrayColor),
                   borderRadius: BorderRadius.circular(8),
@@ -184,10 +184,13 @@ class GamePage extends StatelessWidget {
                   fontSize: 18
                 ),
               ),
+              SizedBox(height: 2 * AppUI.heightUnit),
               GridView.count(
                 childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
                 shrinkWrap: true,
                 crossAxisCount: 3,
+                crossAxisSpacing: 2 * AppUI.widthUnit,
+                mainAxisSpacing: 2 * AppUI.heightUnit,
                 controller: ScrollController(keepScrollOffset: false),
                 padding: EdgeInsets.zero,
                 children: List.generate(6 , (index) => SizedBox(
@@ -196,12 +199,15 @@ class GamePage extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: selectedDiceType != null && selectedDiceType == index + 1
-                        ? Colors.grey[700] : null,
+                        ? Colors.grey[600] : null,
                     ),
-                    height: 10 * AppUI.heightUnit,
-                    width: 10 * AppUI.widthUnit,
+                    height: 8 * AppUI.heightUnit,
+                    width: 8 * AppUI.widthUnit,
                     child: GestureDetector(
-                      child: Image.asset("assets/images/Dice/Big/${index + 1}.png"),
+                      child: Image.asset(
+                        "assets/images/Dice/Big/${index + 1}.png",
+                        width: 10 * AppUI.widthUnit,
+                      ),
                       onTap: () {
                         setState(() => selectedDiceType = index + 1);
                       },
@@ -209,10 +215,10 @@ class GamePage extends StatelessWidget {
                   ),
                 ))
               ),
-              SizedBox(height: 2 * AppUI.heightUnit),
+              SizedBox(height: 4 * AppUI.heightUnit),
               PrimaryButton(
                 text: "Confirm Lier",
-                onTap: () {}
+                onTap: selectedDiceType != null ? () {} : null
               )
             ]
           )
