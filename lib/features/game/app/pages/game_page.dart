@@ -10,6 +10,7 @@ import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numberpicker/numberpicker.dart';
 
@@ -209,6 +210,7 @@ class GamePage extends StatelessWidget {
                         width: 10 * AppUI.widthUnit,
                       ),
                       onTap: () {
+                        HapticFeedback.selectionClick();
                         setState(() => selectedDiceType = index + 1);
                       },
                     )  
