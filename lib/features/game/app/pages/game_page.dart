@@ -7,6 +7,7 @@ import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/bloc/game_bloc.dart';
 import 'package:dice_fe/features/game/app/widgets/game_lobby.dart';
+import 'package:dice_fe/features/game/app/widgets/round_end_player_dice.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/injection_container.dart';
@@ -292,6 +293,18 @@ class GamePage extends StatelessWidget {
               ),
             )
           ],
+        ));
+        widgets.add(SizedBox(height: 3 * AppUI.heightUnit));
+        widgets.add(GridView.count(
+          childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+          shrinkWrap: true,
+          crossAxisCount: 3,
+          children: roundEnd.players.map((player) => RoundEndPlayerDice(
+            name: player.name,
+            jokerCount: player.dice!.where((dice) => dice == 1).length,
+            diceValue: roundEnd.diceValue!,
+            diceCount: player.dice!.where((dice) => dice == roundEnd.diceValue).length,
+          )).toList()
         ));
         break;
 
