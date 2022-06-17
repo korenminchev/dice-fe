@@ -102,3 +102,12 @@ class GameLobbyReady extends GameState {
   @override
   List<Object> get props => [users, rules, userReady, readyLoading];
 }
+
+class RoundEndState extends GameState {
+  final RoundEnd roundEnd;
+
+  RoundEndState(this.roundEnd);
+
+  @override
+  List<Object> get props => [roundEnd];
+}

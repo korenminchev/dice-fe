@@ -12,6 +12,8 @@ enum Event {
   playerReady,
   playerLeave,
   readyConfirmation,
+  accusation,
+  roundEnd,
   none
 }
 
@@ -19,7 +21,8 @@ Map<String, Event> incomingEventMap = {
   "round_start" : Event.roundStart,
   "game_start": Event.gameStart,
   "game_update": Event.lobbyUpdate,
-  "ready_confirm": Event.readyConfirmation
+  "ready_confirm": Event.readyConfirmation,
+  "round_end": Event.roundEnd,
 };
 
 Map<Event, String> outgoingEventMap = {
@@ -41,6 +44,8 @@ abstract class Message {
         return LobbyUpdate.fromJson(json);
       case Event.readyConfirmation:
         return ReadyConfirmation.fromJson(json);
+      case Event.roundEnd:
+        return RoundEnd.fromJson(json);
       default:
         return LobbyUpdate();
     }
@@ -142,4 +147,67 @@ class ReadyConfirmation extends Message {
   factory ReadyConfirmation.fromJson(Map<String, dynamic> json) => _$ReadyConfirmationFromJson(json);
   @override
   Map<String, dynamic> toJson() => _$ReadyConfirmationToJson(this);
+}
+
+
+enum AccusationType {
+  standard,
+  exact,
+  paso
+}
+
+@JsonSerializable()
+class Accusation extends Message {
+  Accusation({
+    required this.accusedPlayer,
+    required this.type,
+    this.diceCount,
+    this.diceValue
+  }) : super(Event.accusation);
+
+  @JsonKey(name: 'event')
+  String eventString = "accusation";
+  @JsonKey(name: "accused_player")
+  String accusedPlayer;
+  AccusationType type;
+  @JsonKey(name: "dice_value")
+  int? diceValue;
+  @JsonKey(name: "dice_count")
+  int? diceCount;
+  
+  factory Accusation.fromJson(Map<String, dynamic> json) => _$AccusationFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$AccusationToJson(this);
+}
+
+@JsonSerializable()
+class RoundEnd extends Message {
+  RoundEnd({
+    required this.winner,
+    required this.loser,
+    required this.correctAccusation,
+    required this.accusationType,
+    required this.players
+  }) : super(Event.none);
+
+  @JsonKey(name: 'event')
+  String eventString = "round_end";
+  String winner;
+  String loser;
+  @JsonKey(name: "correct_accusation")
+  bool correctAccusation;
+  @JsonKey(name: "accusation_type")
+  AccusationType accusationType;
+  @JsonKey(name: "dice_value")
+  int? diceValue;
+  @JsonKey(name: "dice_count")
+  int? diceCount;
+  @JsonKey(name: "joker_count")
+  int? jokerCount;
+  List<DiceUser> players;
+  
+
+  factory RoundEnd.fromJson(Map<String, dynamic> json) => _$RoundEndFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$RoundEndToJson(this);
 }

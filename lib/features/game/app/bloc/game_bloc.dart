@@ -23,6 +23,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<JoinGame>(_joinGame);
     on<ExitGame>(_onExitGame);
     on<ReadyEvent>(_onReady);
+    on<AccusationEvent>(_onAccusation);
   }
 
   void _onVerifyParams(VerifyParams event, Emitter<GameState> emit) async {
@@ -74,6 +75,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     );
   }
 
+  void _onAccusation(AccusationEvent event, Emitter<GameState> emit) {
+    _gameRepository.sendMessage(Accusation(
+      accusedPlayer: event.accusedUser.id,
+      type: event.type,
+      diceCount: event.diceCount,
+      diceValue: event.diceValue
+    ));
+  }
+
   void handleBackendStream(StreamStarted event, Emitter<GameState> emit) async {
     await emit.onEach(
       _websocketStream,
@@ -86,6 +96,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         if (message is RoundStart) {
           print("GameReady update dice");
           emit((state as GameReady).updateDice(message));
+        }
+
+        if (message is RoundEnd) {
+          GameReady currentState = state as GameReady;
+          print("Round end state");
+          emit(RoundEndState(message));
+          print("Return game state");
+          emit(currentState);
         }
 
         else if (message is LobbyUpdate) {

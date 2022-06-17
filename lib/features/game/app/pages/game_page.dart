@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/domain/dice_user.dart';
+import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
@@ -220,13 +221,106 @@ class GamePage extends StatelessWidget {
               SizedBox(height: 4 * AppUI.heightUnit),
               PrimaryButton(
                 text: "Confirm Lier",
-                onTap: selectedDiceType != null ? () {} : null
+                onTap: selectedDiceType != null ? () {
+                  gameBloc.add(AccusationEvent(
+                    type: AccusationType.standard,
+                    accusedUser: selectedUser,
+                    diceValue: selectedDiceType,
+                    diceCount: diceLieCount
+                  ));
+                  Navigator.of(context).pop();
+                } : null
               )
             ]
           )
         ),
       );
     }));
+  }
+
+  List<Widget> buildStandardEndRound(RoundEnd roundEnd) {
+    List<Widget> widgets = [];
+    return widgets;
+  }
+
+  Widget buildRoundEndPopup(BuildContext context, RoundEndState state) {
+    final RoundEnd roundEnd = state.roundEnd;
+    String winnerName = roundEnd.players.firstWhere((player) => player.id == roundEnd.winner).name;
+    List<Widget> widgets = [];
+
+    switch(roundEnd.accusationType) {
+      case AccusationType.standard:
+        widgets.add(Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Total ",
+              style: TextStyle(
+                fontSize: 20
+              ),
+            ),
+            Image.asset(
+              "assets/images/Dice/Big/1.png",
+              width: 24
+            ),
+            if (roundEnd.diceValue != 1)
+              ...[
+              const Text(
+                " + ",
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              ),
+              Image.asset(
+                "assets/images/Dice/Big/${roundEnd.diceValue}.png",
+                width: 24
+              ),
+              ],
+            const Text(
+              " :",
+              style: TextStyle(
+                fontSize: 20
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
+              child: Text(
+                "${roundEnd.diceCount! + roundEnd.jokerCount!}",
+                style: const TextStyle(
+                  fontSize: 20
+                ),
+              ),
+            )
+          ],
+        ));
+        break;
+
+      default:
+        break;
+    }
+
+    return Dialog(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 2 * AppUI.widthUnit,
+            vertical: 2 * AppUI.heightUnit,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                winnerName + " Won",
+                style: const TextStyle(
+                  fontSize: 38,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 2 * AppUI.heightUnit),
+              ...widgets
+            ],
+          )
+        )
+    );
   }
 
   Widget buildGamePage(BuildContext context) {
@@ -246,6 +340,12 @@ class GamePage extends StatelessWidget {
               Navigator.pop(context);
               gameBloc.add(VerifyParams(roomCode));
             });
+        }
+        if (state is RoundEndState) {
+          showDialog(
+            context: context, 
+            builder: (context) =>  buildRoundEndPopup(context, state)
+          );
         }
       },
       builder: (context, state) {
@@ -316,20 +416,23 @@ class GamePage extends StatelessWidget {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                GridView.count(
-                  childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
-                  shrinkWrap: true,
-                  crossAxisCount: 3,
-                  controller: ScrollController(keepScrollOffset: false),
-                  padding: EdgeInsets.zero,
-                  children: state.dice.map(
-                    (dice) => SizedBox(
-                      width: 2 * AppUI.widthUnit,
-                      height: 2 * AppUI.widthUnit,
-                      child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png")
+                SizedBox(
+                  height: 40 * AppUI.heightUnit,
+                  child: GridView.count(
+                    childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+                    shrinkWrap: true,
+                    crossAxisCount: 3,
+                    controller: ScrollController(keepScrollOffset: false),
+                    padding: EdgeInsets.zero,
+                    children: state.dice.map(
+                      (dice) => SizedBox(
+                        width: 2 * AppUI.widthUnit,
+                        height: 2 * AppUI.widthUnit,
+                        child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png")
+                      )
                     )
-                  )
-                    .toList()
+                      .toList()
+                  ),
                 ),
                 SizedBox(height: 15 * AppUI.heightUnit),
                 PrimaryButton(

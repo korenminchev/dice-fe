@@ -28,6 +28,20 @@ class JoinGame extends GameEvent {
   JoinGame(this.roomCode, this.user);
 }
 
+class AccusationEvent extends GameEvent {
+  AccusationEvent({
+    required this.accusedUser,
+    required this.type,
+    this.diceCount,
+    this.diceValue,
+  });
+
+  final DiceUser accusedUser;
+  final AccusationType type;
+  final int? diceCount;
+  final int? diceValue;
+}
+
 class ServerMessage extends GameEvent {
   final Message message;
 
