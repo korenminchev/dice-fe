@@ -16,32 +16,13 @@ class DrawerItem extends StatelessWidget {
         children: [
           Row(
             children: <Widget>[
-              const SizedBox(width: 10),
+              const SizedBox(width: 16),
               icon,
-              const SizedBox(width: 15),
+              const SizedBox(width: 16),
               Text(title, style: const TextStyle(fontSize: 20)),
             ],
           ),
-          const SizedBox(height: 7),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Flexible(
-                flex: 1,
-                child: SizedBox()
-              ),
-              Flexible(
-                flex:4,
-                child: SizedBox(
-                  height: 1,
-                  child: Container(
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 2.5 * AppUI.heightUnit),
+          SizedBox(height: 4 * AppUI.heightUnit),
         ],
       ),
     );

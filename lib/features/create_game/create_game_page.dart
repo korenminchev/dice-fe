@@ -99,6 +99,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
               children: [
                 cupertino.CupertinoSwitch(
                   value: rules.pasoAllowed!,
+                  activeColor: AppUI.primaryColor,
                   onChanged: (newValue) => setState(() {
                     rules.pasoAllowed = newValue;
                   })
@@ -133,6 +134,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
               children: [
                 cupertino.CupertinoSwitch(
                   value: rules.exactAllowed!,
+                  activeColor: AppUI.primaryColor,
                   onChanged: (newValue) => setState(() {
                     rules.exactAllowed = newValue;
                   })

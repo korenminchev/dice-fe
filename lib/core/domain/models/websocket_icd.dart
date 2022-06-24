@@ -179,7 +179,7 @@ class Accusation extends Message {
   @override
   Map<String, dynamic> toJson() => _$AccusationToJson(this);
 }
-
+// אני נדב איל בן תור מונטל ודייס זה קול רצח!
 @JsonSerializable()
 class RoundEnd extends Message {
   RoundEnd({

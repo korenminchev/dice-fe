@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/domain/version.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
@@ -8,15 +9,22 @@ import 'package:dice_fe/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
   init();
   setUrlStrategy(PathUrlStrategy());
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const DiceApp());
 }
 
 class DiceApp extends StatelessWidget {
   const DiceApp({Key? key}) : super(key: key);
+
+  void initVersion() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    Version.set(info.version);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +32,7 @@ class DiceApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-
+    initVersion();
     return MaterialApp(
       title: 'Dice',
       theme: ThemeData(
