@@ -389,6 +389,7 @@ class GamePage extends StatelessWidget {
           print(state.toString());
           print(state.dice);
           print(state.players);
+          List<int> orderedDice = state.dice.toList()..sort();
           if (state.dice.isEmpty || state.players.isEmpty) {
             return const Center(child: CircularProgressIndicator.adaptive());
           }
@@ -421,7 +422,9 @@ class GamePage extends StatelessWidget {
                     )
                   ).toList()
                 ),
-                SizedBox(height: 4 * AppUI.heightUnit),
+                SizedBox(height: 2 * AppUI.heightUnit),
+                const Divider(),
+                SizedBox(height: 2 * AppUI.heightUnit),
                 const Text(
                   "Your Dice",
                   style: TextStyle(
@@ -434,10 +437,10 @@ class GamePage extends StatelessWidget {
                   child: GridView.count(
                     childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
                     shrinkWrap: true,
-                    crossAxisCount: 3,
+                    crossAxisCount: 4,
                     controller: ScrollController(keepScrollOffset: false),
                     padding: EdgeInsets.zero,
-                    children: state.dice.map(
+                    children: orderedDice.map(
                       (dice) => SizedBox(
                         width: 2 * AppUI.widthUnit,
                         height: 2 * AppUI.widthUnit,
@@ -455,7 +458,22 @@ class GamePage extends StatelessWidget {
                       context: context,
                       builder: (context) => buildAccusationPopup(context, state, totalDiceCount),
                     );
-                  })
+                  },
+                  popupActionsBuilder: 
+                    (BuildContext context) => <PopupMenuEntry<AccusationType>>[
+                      PopupMenuItem<AccusationType>(
+                        value: AccusationType.paso,
+                        child: TextButton(
+                          child: Text('Working a lot harder'),
+                          onPressed: () {print("1");},
+                        ),
+                      ),
+                      const PopupMenuItem<AccusationType>(
+                        value: AccusationType.exact,
+                        child: Text('Being a lot smarter'),
+                      ),
+                    ],
+                ),
               ],
             ),
           );
