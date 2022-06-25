@@ -6,6 +6,7 @@ import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/features/home/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
+import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 
 class CreateGamePage extends StatefulWidget {
   const CreateGamePage({ Key? key }) : super(key: key);
@@ -37,20 +38,13 @@ class _CreateGamePageState extends State<CreateGamePage> {
           children: [
             SizedBox(height: 2 * AppUI.heightUnit),
             const Text(
-              "Create Game",
+              "Game Settings",
               style: TextStyle(
                 fontSize: 34,
                 fontWeight: FontWeight.w700
               ),
             ),
-            SizedBox(height: 2 * AppUI.heightUnit),
-            const Text(
-              "Game settings",
-              style: TextStyle(
-                fontSize: 24
-              ),
-            ),
-            SizedBox(height: 2 * AppUI.heightUnit),
+            SizedBox(height: 5 * AppUI.heightUnit),
             const Text(
               "Dice count",
               style: TextStyle(
@@ -58,34 +52,26 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 fontWeight: FontWeight.w700
               ),
             ),
-            SizedBox(height: AppUI.heightUnit),
+            SizedBox(height: 2 * AppUI.heightUnit),
             Container(
+              width: 30 * AppUI.widthUnit,
               decoration: BoxDecoration(
                 border: Border.all(color: AppUI.lightGrayColor),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton(
-                  value: rules.initialDiceCount,
-                  items: List.generate(
-                    8,
-                    (index) => DropdownMenuItem(
-                      value: index + 3,
-                      child: SizedBox(
-                        width: 128,
-                        child: Center(child: Text("${index + 3}"))
-                      ),
-                    )
-                  ),
-                  onChanged: (newCount) {
-                    setState(() {
-                      rules.initialDiceCount = newCount as int;
-                    });
-                  },
-                ),
+              child: TouchSpin(
+                min: 1,
+                max: 10,
+                value: rules.initialDiceCount as num,
+                step: 1,
+                onChanged: (value) {
+                  rules.initialDiceCount = value as int;
+                },
               ),
             ),
-            SizedBox(height: 3 * AppUI.heightUnit),
+            SizedBox(height: 5 * AppUI.heightUnit),
+            const Divider(),
+            SizedBox(height: 5 * AppUI.heightUnit),
             const Text(
               "Advanced rules",
               style: TextStyle(
