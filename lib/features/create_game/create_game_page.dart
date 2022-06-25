@@ -20,7 +20,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
   DiceBackend backend = serviceLocator<DiceBackend>();
   GameRules rules = GameRules(
     initialDiceCount: 5,
-    pasoAllowed: false,
+    pasoAllowed: true,
     exactAllowed: true
   );
   bool loading = false;
@@ -111,22 +111,32 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     fontSize: 20,
                     fontWeight: FontWeight.w700
                   ),
-                )
+                ),
+                SizedBox(width: 2 * AppUI.heightUnit),
+                Tooltip(
+                  message: "Player can skip a bet once per round\n"
+                           "and pass the previous bet to the\n"
+                           "next player. A paso is valid if a player\n"
+                           "has 4 dice of the same type, or 5\n"
+                           "different ones. A player may lie\n"
+                           "about having a paso.",
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700]
+                  ),
+                  triggerMode: TooltipTriggerMode.tap,
+                  showDuration: const Duration(seconds: 30),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ],
-            ),
-            SizedBox(height: AppUI.heightUnit),
-            const Text(
-              "Player can skip a bet once per round\n"
-              "and pass the previous bet to the\n"
-              "next player. A paso is valid if a player\n"
-              "has 4 dice of the same type, or 5\n"
-              "different ones. A player may lie\n"
-              "about having a paso.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w300
-              ),
             ),
             SizedBox(height: 3 * AppUI.heightUnit),
             Row(
@@ -141,27 +151,37 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 ),
                 SizedBox(width: AppUI.heightUnit),
                 const Text(
-                  "Exactly",
+                  "Exact",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700
                   ),
-                )
+                ),
+                SizedBox(width: 2 * AppUI.widthUnit),
+                Tooltip(
+                  message: "If a player thinks that the bet has the\n"
+                           "exact value of dice he can use the\n"
+                           "exactly rule. If the dice count isn't\n"
+                           "exactly as the bet he loses a dice. If\n"
+                           "he guesses correct and the dice\n"
+                           "count is exactly the bet, nothing happens.",
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700]
+                  ),
+                  showDuration: const Duration(seconds: 30),
+                  triggerMode: TooltipTriggerMode.tap,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ],
-            ),
-            SizedBox(height: AppUI.heightUnit),
-            const Text(
-              "If a player thinks that the bet has the\n"
-              "exact value of dice he can use the\n"
-              "exactly rule. If the dice count isn't\n"
-              "exactly as the bet he loses a dice. If\n"
-              "he guesses correct and the dice\n"
-              "count is exactly the bet, nothing happens.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w300
-              ),
             ),
             SizedBox(height: 8 * AppUI.heightUnit),
             if (loading)
