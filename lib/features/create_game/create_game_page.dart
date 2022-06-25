@@ -104,7 +104,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     rules.pasoAllowed = newValue;
                   })
                 ),
-                SizedBox(width: AppUI.heightUnit),
+                SizedBox(width: AppUI.widthUnit),
                 const Text(
                   "Paso",
                   style: TextStyle(
@@ -112,7 +112,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     fontWeight: FontWeight.w700
                   ),
                 ),
-                SizedBox(width: 2 * AppUI.heightUnit),
+                SizedBox(width: 2 * AppUI.widthUnit),
                 Tooltip(
                   message: "Player can skip a bet once per round\n"
                            "and pass the previous bet to the\n"
@@ -149,7 +149,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                     rules.exactAllowed = newValue;
                   })
                 ),
-                SizedBox(width: AppUI.heightUnit),
+                SizedBox(width: AppUI.widthUnit),
                 const Text(
                   "Exact",
                   style: TextStyle(
