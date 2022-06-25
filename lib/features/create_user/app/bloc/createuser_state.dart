@@ -21,4 +21,8 @@ class CreateUserFailure extends CreateUserState {
   const CreateUserFailure() : super(nameValid: true);
 }
 
-class UserCreated extends CreateUserState {}
+class UserCreated extends CreateUserState {
+  final DiceUser user;
+
+  const UserCreated(this.user);
+}

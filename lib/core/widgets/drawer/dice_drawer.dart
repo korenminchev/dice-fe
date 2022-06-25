@@ -1,3 +1,6 @@
+import 'package:dice_fe/core/domain/version.dart';
+import 'package:dice_fe/core/widgets/app_bar_title.dart';
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'drawer_item.dart';
@@ -8,13 +11,22 @@ class DiceDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+
+    AppUI.setUntitsSize(context);
     return SizedBox(
       width: width,
       child: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const SizedBox(height: 50),
+            SizedBox(height: 2 * AppUI.heightUnit),
+            const Center(
+              child: DiceAppBarTitle(),
+              widthFactor: 1.5,
+            ),
+            const Divider(),
+            SizedBox(height: 3 * AppUI.heightUnit),
             DrawerItem(
               icon: const Icon(Icons.account_circle),
               title: 'Change name',
@@ -36,6 +48,15 @@ class DiceDrawer extends StatelessWidget {
                 // TODO (Koren) : Push bug report screen;
               },
             ),
+            // SizedBox(height: 2 * AppUI.heightUnit),
+            const Divider(),
+            SizedBox(height: AppUI.heightUnit),
+            Center(
+              child: Text(
+                'Version ${Version.ver}',
+                style: const TextStyle(fontSize: 10),
+              ),
+            )
           ],
         ),
       ),

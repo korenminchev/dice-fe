@@ -14,12 +14,25 @@ class JoinBloc extends Bloc<JoinEvent, JoinState> {
   }
 
   void _onTypingEvent(TypingEvent event, Emitter<JoinState> emit) async {
-    final codeValid = await _joinRepository.isRoomCodeValid(event.roomCodeTyped);
+    if (!_joinRepository.isRoomCodeValid(event.roomCodeTyped)) {
+      emit(JoinInitial());
+      return;
+    }
+
+    emit(const JoinLoading());
+    final codeValid = await _joinRepository.isRoomCodeJoinable(event.roomCodeTyped);
     codeValid.fold(
-      (failure) => emit(JoinInitial()),
+      (failure) {
+        if (failure is RoomCodeInvalid) {
+          emit(const JoinFailureState(errorMessage: "Room code does not exist"));
+        }
+        else {
+          emit(const JoinFailureState());
+        }
+      },
       (isRoomCodeJoinable) => isRoomCodeJoinable
           ? emit(const JoinAllowed())
-          : emit(JoinInitial()),
+          : emit(const JoinFailureState(errorMessage: "Room code does not exist")),
     );
   }
 

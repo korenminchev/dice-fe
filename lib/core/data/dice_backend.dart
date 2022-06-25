@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/failure.dart';
+import 'package:dice_fe/core/domain/models/game_rules.dart';
+import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ServerFailure extends Failure {
@@ -18,7 +22,7 @@ class ServerFailure extends Failure {
 class DiceBackend {
   final String serverUrl = 'https://dice-be.shust.in';
   WebSocketChannel? _gameChannel;
-  late String _userId;
+  late Map<String, dynamic> _user;
 
   Future<Either<ServerFailure, http.Response>> _get(String url) async {
     print('GET: $url');
@@ -40,7 +44,7 @@ class DiceBackend {
   }
 
   Future<Either<ServerFailure, http.Response>> _post(String url,
-      {Map<String, String>? body}) async {
+      {Map<String, dynamic>? body}) async {
     print('POST: $url');
     print(json.encode(body));
     final response = await http.post(
@@ -54,6 +58,8 @@ class DiceBackend {
       body: json.encode(body)
     );
     if (response.statusCode == 200) {
+      print("RESPONSE: ${response.statusCode}");
+      print(response.body);
       return Right(response);
     }
     print("RESPONSE: ${response.statusCode}");
@@ -62,7 +68,14 @@ class DiceBackend {
   }
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
-    _gameChannel = WebSocketChannel.connect(Uri.parse('$serverUrl/games/ws/$roomCode'));
+    try {
+      _gameChannel = HtmlWebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
+    }
+    catch(e) {
+      print(e);
+      return Left(Failure());
+    }
+    _gameChannel!.sink.add(json.encode({"id": _user["id"]}));
     return Right(_gameChannel!.stream);
   }
 
@@ -74,8 +87,8 @@ class DiceBackend {
     return Right(_gameChannel!.stream);
   }
 
-  void init(String userId) {
-    _userId = userId;
+  void init(Map<String, dynamic> user) {
+    _user = user;
   }
 
   Future<Either<ServerFailure, DiceUser>> createUser(String username) async {
@@ -84,27 +97,63 @@ class DiceBackend {
       (failure) => Left(failure),
       (response) {
         Map<String, dynamic> userJson = json.decode(response.body);
-        _userId = userJson['id'];
+        userJson.remove("friend_ids");
+        _user = userJson;
         return Right(DiceUser.fromJson(userJson));
       },
     );
   }
 
-  Future<Either<ServerFailure, String>> createGame() async {
-    final response = await _post("games/");
+  Future<Either<ServerFailure, String>> createGame(GameRules rules) async {
+    final response = await _post("games/",
+      body: {"game_rules": rules.toJson()});
     return response.fold(
       (failure) => Left(failure),
       (response) => Right(json.decode(response.body)),
     );
   }
 
-  Future<Either<ServerFailure, bool>> isRoomCodeJoinable(String roomCode) async {
+  Future<Either<ServerFailure, GameProgression>> isRoomCodeJoinable(String roomCode) async {
     final response = await _get("games/$roomCode/state");
     return response.fold(
       (failure) => Left(failure),
       (response) {
-        return Right(json.decode(response.body) == "lobby");
+        GameProgression? progression = gameProgressionFromString[json.decode(response.body)];
+        if (progression == null) {
+          return Left(ServerFailure(response.statusCode, "Communication Error"));
+        }
+        return Right(progression);
       }
     );
+  }
+
+  Future<Either<ServerFailure, bool>> isPlayerInGame(String roomCode, String playerId) async {
+    final response = await _get("games/$roomCode/$playerId");
+    return response.fold(
+      (failure) => Left(failure),
+      (response) {
+        final result = json.decode(response.body);
+        if (result.runtimeType != bool) {
+          return Left(ServerFailure(response.statusCode, "Communication Error"));
+        }
+        return Right(result as bool);
+      }
+    );
+  }
+
+  Either<Failure, void> sendToWS(Map<String, dynamic> message) {
+    if (_gameChannel == null) {
+      return Left(Failure());
+    }
+    print("Sending to WS: $message");
+    _gameChannel!.sink.add(json.encode(message));
+    return const Right(null);
+  }
+
+  void closeWS() {
+    if (_gameChannel != null) {
+      _gameChannel!.sink.close();
+      _gameChannel = null;
+    }
   }
 }

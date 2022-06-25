@@ -1,4 +1,5 @@
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
+import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/core/widgets/drawer/dice_drawer.dart';
 import 'package:dice_fe/core/widgets/primary_button.dart';
 import 'package:dice_fe/core/widgets/text_field.dart';
@@ -16,6 +17,7 @@ class JoinPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return Scaffold(
       drawer: const DiceDrawer(),
       appBar: AppBar(
@@ -42,11 +44,11 @@ class JoinPage extends StatelessWidget {
         return Center(
           child: Column(
             children: [
-              const SizedBox(height: 16),
+              SizedBox(height: 2 * AppUI.heightUnit),
               const Text(
                 "Join Game",
                 style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 40),
+              SizedBox(height: 5 * AppUI.heightUnit),
               DiceTextField(
                 textAlign: TextAlign.center,
                 textInputFormatters: [
@@ -56,23 +58,36 @@ class JoinPage extends StatelessWidget {
                 controller: _joinRoomCodeController,
                 onChanged: (roomCode) {
                   BlocProvider.of<JoinBloc>(context).add(TypingEvent(roomCode));
-                }
+                },
+                keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 40),
-              PrimaryButton(
-                text: "Join Game",
-                onTap: state.joinAllowed 
-                  ? () => BlocProvider.of<JoinBloc>(context).add(
-                    JoinRequestEvent(
-                      roomCode: _joinRoomCodeController.text,
-                      joinAllowed: true
-                    )) 
-                  : null,
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                "Friends Active Games",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
+              if (state is! JoinFailureState)
+                SizedBox(height: 6 * AppUI.heightUnit),
+              if (state is JoinFailureState)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.8 * AppUI.heightUnit),
+                  child: Text(
+                    state.errorMessage,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700
+                    ),
+                  ),
+                ),
+              if (state is JoinLoading) 
+                const CircularProgressIndicator.adaptive(),
+              if (state is! JoinLoading)
+                PrimaryButton(
+                  text: "Join Game",
+                  onTap: state.joinAllowed 
+                    ? () => BlocProvider.of<JoinBloc>(context).add(
+                      JoinRequestEvent(
+                        roomCode: _joinRoomCodeController.text,
+                        joinAllowed: true
+                      )) 
+                    : null,
+                ),
             ],
           ),
         );

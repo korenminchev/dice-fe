@@ -8,6 +8,7 @@ class DiceTextField extends StatelessWidget {
   final TextEditingController? controller;
   final Function(String)? onChanged;
   final String? hintText;
+  final TextInputType? keyboardType;
   const DiceTextField({
     Key? key,
     this.textAlign = TextAlign.center,
@@ -15,14 +16,17 @@ class DiceTextField extends StatelessWidget {
     this.controller,
     this.onChanged,
     this.hintText,
+    this.keyboardType,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    AppUI.setUntitsSize(context);
     return SizedBox(
-      width: 288,
-      height: 56,
+      width: AppUI.widthUnit * 36,
+      height: AppUI.heightUnit * 7,
       child: TextField(
+        keyboardType: keyboardType,
         onChanged: onChanged,
         controller: controller,
         textAlign: textAlign,

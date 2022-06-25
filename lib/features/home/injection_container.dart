@@ -1,5 +1,6 @@
 import 'package:dice_fe/core/data/cookie_manager.dart';
 import 'package:dice_fe/core/data/dice_backend.dart';
+import 'package:dice_fe/core/domain/authorization_repository.dart';
 import 'package:dice_fe/features/home/bloc/home_bloc.dart';
 import 'package:dice_fe/features/home/data/home_repository_impl.dart';
 import 'package:dice_fe/features/home/domain/home_repository.dart';
@@ -15,7 +16,8 @@ void initHome() {
   serviceLocator.registerLazySingleton<HomeRepository>(
     () => HomeRepositoryImpl(
       serviceLocator<DiceBackend>(),
-      serviceLocator<CookieManager>()
+      serviceLocator<CookieManager>(),
+      serviceLocator<AuthorizationRepository>(),
     )
   );
 }

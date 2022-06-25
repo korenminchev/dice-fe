@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/features/create_user/domain/user_createtion_repository.dart';
 import 'package:meta/meta.dart';
 
@@ -26,7 +27,7 @@ class CreateUserBloc extends Bloc<CreateUserEvent, CreateUserState> {
     final result = await _userCreationRepository.createUser(event.name);
     result.fold(
       (failure) => emit(const CreateUserFailure()),
-      (user) => emit(UserCreated()),
+      (user) => emit(UserCreated(user)),
     );
   }
 }
