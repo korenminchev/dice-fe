@@ -8,12 +8,14 @@ class PrimaryButton extends StatelessWidget {
   final double? width;
   final double? height;
   final List<PopupMenuEntry<dynamic>> Function(BuildContext)? popupActionsBuilder;
+  final void Function(dynamic)? onPopupItemSelected;
   const PrimaryButton(
     {required this.text,
     required this.onTap,
     this.width,
     this.height,
     this.popupActionsBuilder,
+    this.onPopupItemSelected,
     Key? key}) : super(key: key);
 
   @override
@@ -39,15 +41,26 @@ class PrimaryButton extends StatelessWidget {
           child: SizedBox(
             width: width ?? AppUI.widthUnit * 36,
             height: height ?? AppUI.heightUnit * 7,
-            child: Center(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                if (popupActionsBuilder != null)
+                  SizedBox(
+                    width: width == null ? AppUI.widthUnit * 9 : width! / 4,
+                    height: height ?? AppUI.heightUnit * 7,
+                  ),
+                Center(
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -61,6 +74,7 @@ class PrimaryButton extends StatelessWidget {
             ),
             child: PopupMenuButton(
               itemBuilder: popupActionsBuilder!,
+              onSelected: onPopupItemSelected,
             )
           )
       ],

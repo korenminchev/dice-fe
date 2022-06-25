@@ -389,6 +389,7 @@ class GamePage extends StatelessWidget {
           print(state.toString());
           print(state.dice);
           print(state.players);
+          bool advancedRules = state.rules.exactAllowed! || state.rules.pasoAllowed!;
           List<int> orderedDice = state.dice.toList()..sort();
           if (state.dice.isEmpty || state.players.isEmpty) {
             return const Center(child: CircularProgressIndicator.adaptive());
@@ -437,14 +438,13 @@ class GamePage extends StatelessWidget {
                   child: GridView.count(
                     childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
                     shrinkWrap: true,
-                    crossAxisCount: 4,
+                    crossAxisCount: 3,
                     controller: ScrollController(keepScrollOffset: false),
                     padding: EdgeInsets.zero,
                     children: orderedDice.map(
-                      (dice) => SizedBox(
-                        width: 2 * AppUI.widthUnit,
-                        height: 2 * AppUI.widthUnit,
-                        child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png")
+                      (dice) => Padding(
+                        padding: EdgeInsets.all(AppUI.heightUnit * 2),
+                        child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png"),
                       )
                     )
                       .toList()
@@ -459,20 +459,33 @@ class GamePage extends StatelessWidget {
                       builder: (context) => buildAccusationPopup(context, state, totalDiceCount),
                     );
                   },
-                  popupActionsBuilder: 
+                  popupActionsBuilder: advancedRules ?
                     (BuildContext context) => <PopupMenuEntry<AccusationType>>[
-                      PopupMenuItem<AccusationType>(
+                      const PopupMenuItem<AccusationType>(
                         value: AccusationType.paso,
-                        child: TextButton(
-                          child: Text('Working a lot harder'),
-                          onPressed: () {print("1");},
-                        ),
+                        child: Text('Paso'),
                       ),
                       const PopupMenuItem<AccusationType>(
                         value: AccusationType.exact,
-                        child: Text('Being a lot smarter'),
+                        child: Text('Exact'),
                       ),
-                    ],
+                    ] : null,
+                  onPopupItemSelected: advancedRules ?
+                    (accusationType) {
+                      switch (accusationType) {
+                        case AccusationType.paso:
+                          print("Paso");
+                          break;
+
+                        case AccusationType.exact:
+                          print("Exact");
+                          break;
+                        
+                        default:
+                          break;
+                      }
+                    }
+                    : null,
                 ),
               ],
             ),
