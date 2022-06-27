@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
@@ -180,6 +182,13 @@ class Accusation extends Message {
   Map<String, dynamic> toJson() => _$AccusationToJson(this);
 }
 // אני נדב איל בן תור מונטל ודייס זה קול רצח!
+
+List<DiceUser> _playersFromJson(String? json) {
+  if (json == null) return [];
+  Map<String, dynamic> decoded = jsonDecode(json);
+  return List<DiceUser>.from(decoded["players"].map((e) => DiceUser.fromJson(e)).toList());
+}
+
 @JsonSerializable()
 class RoundEnd extends Message {
   RoundEnd({
@@ -204,6 +213,7 @@ class RoundEnd extends Message {
   int? diceCount;
   @JsonKey(name: "joker_count")
   int? jokerCount;
+  @JsonKey(name: "players", fromJson: _playersFromJson)
   List<DiceUser> players;
   
 
