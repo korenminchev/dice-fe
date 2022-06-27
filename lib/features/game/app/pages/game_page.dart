@@ -109,9 +109,31 @@ class GamePage extends StatelessWidget {
     Navigator.of(context).popUntil(ModalRoute.withName(HomePage.routeName));
   }
 
-  Widget buildAccusationPopup(BuildContext context, GameReady state, int totalDiceCount) {
-    DiceUser selectedUser = state.players.firstWhere((player) => player.id == currentUser!.id);
-    int diceLieCount = (totalDiceCount / 3).round();
+  String topLieText(AccusationType accusationType) {
+    switch (accusationType) {
+      case AccusationType.standard:
+        return "Who Lied?";
+      case AccusationType.exact:
+        return "Who was exact?";
+      default:
+        return "";
+    }
+  }
+
+  String accuseButtonText(AccusationType accusationType) {
+    switch (accusationType) {
+      case AccusationType.standard:
+        return "Confirm Lier";
+      case AccusationType.exact:
+        return "Confirm Exact";
+      default:
+        return "";
+    }
+  }
+
+  Widget buildAccusationPopup(BuildContext context, GameReady state, int totalDiceCount, AccusationType accusationType) {
+    DiceUser? selectedUser;
+    int diceLieCount = (totalDiceCount / 3).round() + 1;
     int? selectedDiceType;
 
     return StatefulBuilder(builder: ((context, setState) {
@@ -124,9 +146,9 @@ class GamePage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Who Lied?",
-                style: TextStyle(
+              Text(
+                topLieText(accusationType),
+                style: const TextStyle(
                   fontSize: 38,
                   fontWeight: FontWeight.bold
                 ),
@@ -156,7 +178,7 @@ class GamePage extends StatelessWidget {
                     },
                     hint: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: const Text("Who sits on your left?"),
+                      child: const Text("Select a player"),
                     ),
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -221,11 +243,11 @@ class GamePage extends StatelessWidget {
               ),
               SizedBox(height: 4 * AppUI.heightUnit),
               PrimaryButton(
-                text: "Confirm Lier",
-                onTap: selectedDiceType != null ? () {
+                text: accuseButtonText(accusationType),
+                onTap: selectedDiceType != null && selectedUser != null ? () {
                   gameBloc.add(AccusationEvent(
-                    type: AccusationType.standard,
-                    accusedUser: selectedUser,
+                    type: accusationType,
+                    accusedUser: selectedUser!,
                     diceValue: selectedDiceType,
                     diceCount: diceLieCount
                   ));
@@ -251,6 +273,7 @@ class GamePage extends StatelessWidget {
 
     switch(roundEnd.accusationType) {
       case AccusationType.standard:
+      case AccusationType.exact:
         widgets.add(Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -456,15 +479,17 @@ class GamePage extends StatelessWidget {
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (context) => buildAccusationPopup(context, state, totalDiceCount),
+                      builder: (context) => buildAccusationPopup(context, state, totalDiceCount, AccusationType.standard),
                     );
                   },
                   popupActionsBuilder: advancedRules ?
                     (BuildContext context) => <PopupMenuEntry<AccusationType>>[
-                      const PopupMenuItem<AccusationType>(
-                        value: AccusationType.paso,
-                        child: Text('Paso'),
-                      ),
+                      if (state.rules.pasoAllowed!)
+                        const PopupMenuItem<AccusationType>(
+                          value: AccusationType.paso,
+                          child: Text('Paso'),
+                        ),
+                      if (state.rules.exactAllowed!)
                       const PopupMenuItem<AccusationType>(
                         value: AccusationType.exact,
                         child: Text('Exact'),
@@ -474,11 +499,13 @@ class GamePage extends StatelessWidget {
                     (accusationType) {
                       switch (accusationType) {
                         case AccusationType.paso:
-                          print("Paso");
                           break;
 
                         case AccusationType.exact:
-                          print("Exact");
+                          showDialog(
+                            context: context,
+                            builder: (context) => buildAccusationPopup(context, state, totalDiceCount, AccusationType.exact)
+                          );
                           break;
                         
                         default:
