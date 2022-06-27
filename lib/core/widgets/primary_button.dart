@@ -65,18 +65,24 @@ class PrimaryButton extends StatelessWidget {
           ),
         ),
         if (popupActionsBuilder != null)
-          Container(
+          PopupMenuButton(
+          itemBuilder: popupActionsBuilder!,
+          onSelected: onPopupItemSelected,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: AppUI.primaryColor,
+              borderRadius: BorderRadius.horizontal(
+                right: Radius.circular(12.0),
+              )
+            ),
             width: width == null ? AppUI.widthUnit * 9 : width! / 4,
             height: height ?? AppUI.heightUnit * 7,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.horizontal(right: Radius.circular(12.0)),
-              color: onTap != null ? AppUI.primaryColor : AppUI.lightGrayColor
+            child: const Icon(
+              Icons.more_horiz,
+              color: Colors.white,
             ),
-            child: PopupMenuButton(
-              itemBuilder: popupActionsBuilder!,
-              onSelected: onPopupItemSelected,
-            )
-          )
+          ),
+        )
       ],
     );
   }

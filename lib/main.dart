@@ -79,7 +79,7 @@ class DiceApp extends StatelessWidget {
         fontFamily: "Lato",
         splashFactory: NoSplash.splashFactory,
         splashColor: Colors.transparent,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        visualDensity: const VisualDensity(horizontal: -2, vertical: -2)
       ),
     );
   }
