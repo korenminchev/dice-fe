@@ -36,11 +36,18 @@ class GameReady extends GameState {
         dice = [];
 
   GameReady update(LobbyUpdate message) {
+    List<DiceUser> newPlayers;
+    if (players.isEmpty) {
+      newPlayers = message.players;
+    } else {
+      newPlayers = message.players.isEmpty ? players : 
+        message.players.map((p) => p.update(players.firstWhere((op) => op.id == p.id))).toList();     
+    }
     return GameReady(
       currentUser,
       rules,
-      message.players ?? players,
-      const [],
+      newPlayers,
+      dice,
     );
   }
 
@@ -66,16 +73,16 @@ class GameLobbyReady extends GameState {
   GameLobbyReady({required this.users, required this.rules, this.userReady = false, this.readyLoading = false, this.error});
 
   GameLobbyReady.fromMessage(LobbyUpdate message, DiceUser currentUser) :
-    users = message.players ?? [],
+    users = message.players,
     rules = message.rules!,
-    userReady = (message.players!.firstWhere((player) => player.id == currentUser.id)).ready!,
+    userReady = (message.players.firstWhere((player) => player.id == currentUser.id)).ready!,
     readyLoading = false,
     error = null
     ;
 
   GameLobbyReady update(LobbyUpdate update) {
     return GameLobbyReady(
-      users: update.players ?? users,
+      users: update.players,
       rules: rules.update(rules),
       readyLoading: readyLoading,
       userReady: userReady,

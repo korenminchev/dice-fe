@@ -49,7 +49,7 @@ abstract class Message {
       case Event.roundEnd:
         return RoundEnd.fromJson(json);
       default:
-        return LobbyUpdate();
+        return RoundStart();
     }
   }
 
@@ -84,12 +84,12 @@ GameProgression? _gameProgressionFromString(String? value) {
 @JsonSerializable(explicitToJson: true)
 class LobbyUpdate extends Message {
   LobbyUpdate({
-    this.players,
+    required this.players,
     this.rules,
     this.admin,
     this.progression,
   }) : super(Event.lobbyUpdate);
-  List<DiceUser>? players;
+  List<DiceUser> players;
   GameRules? rules;
   DiceUser? admin;
   List<int>? dice;

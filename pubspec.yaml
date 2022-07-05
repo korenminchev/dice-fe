@@ -45,6 +45,7 @@ dependencies:
   package_info: ^2.0.2
   package_info_plus: ^1.4.2
   flutter_touch_spin: ^2.0.0
+  flutter_clean_architecture: ^5.0.2
 
 dev_dependencies:
   flutter_test:

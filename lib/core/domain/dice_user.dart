@@ -30,4 +30,16 @@ class DiceUser {
 
   factory DiceUser.fromJson(Map<String, dynamic> json) => _$DiceUserFromJson(json);
   toJson() => _$DiceUserToJson(this);
+
+  DiceUser update(DiceUser other) {
+    return DiceUser(
+      id: other.id,
+      name: other.name,
+      ready: other.ready ?? ready,
+      playerOnLeft: other.playerOnLeft ?? playerOnLeft,
+      playerOnRight: other.playerOnRight ?? playerOnRight,
+      currentDiceCount: other.currentDiceCount ?? currentDiceCount,
+      dice: other.dice ?? dice,
+    );
+  }
 }

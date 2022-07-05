@@ -319,7 +319,7 @@ class GamePage extends StatelessWidget {
         ));
         widgets.add(SizedBox(height: 3 * AppUI.heightUnit));
         widgets.add(GridView.count(
-          childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+          childAspectRatio: AppUI.widthUnit / (AppUI.heightUnit * 1.5),
           shrinkWrap: true,
           crossAxisCount: 3,
           children: roundEnd.players.map((player) => RoundEndPlayerDice(
@@ -408,15 +408,15 @@ class GamePage extends StatelessWidget {
         }
 
         if (state is GameReady) {
-          int totalDiceCount = state.players.map((player) => player.currentDiceCount).reduce((a, b) => a! + b!)!;
           print(state.toString());
           print(state.dice);
           print(state.players);
           bool advancedRules = state.rules.exactAllowed! || state.rules.pasoAllowed!;
-          List<int> orderedDice = state.dice.toList()..sort();
           if (state.dice.isEmpty || state.players.isEmpty) {
             return const Center(child: CircularProgressIndicator.adaptive());
           }
+          int totalDiceCount = state.players.map((player) => player.currentDiceCount).reduce((a, b) => a! + b!)!;
+          List<int> orderedDice = state.dice.toList()..sort();
           return Center(
             child: Column(
               children: [
@@ -430,7 +430,7 @@ class GamePage extends StatelessWidget {
                 ),
                 SizedBox(height: 3 * AppUI.heightUnit),
                 GridView.count(
-                  childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+                  childAspectRatio: AppUI.widthUnit / (AppUI.heightUnit / 4),
                   shrinkWrap: true,
                   crossAxisCount: 3,
                   crossAxisSpacing: 3 * AppUI.widthUnit,
@@ -473,7 +473,7 @@ class GamePage extends StatelessWidget {
                       .toList()
                   ),
                 ),
-                SizedBox(height: 15 * AppUI.heightUnit),
+                Expanded(child: SizedBox(height: 15 * AppUI.heightUnit)),
                 PrimaryButton(
                   text: "Accuse!",
                   onTap: () {
@@ -514,6 +514,7 @@ class GamePage extends StatelessWidget {
                     }
                     : null,
                 ),
+                SizedBox(height: 4 * AppUI.heightUnit),
               ],
             ),
           );

@@ -88,56 +88,66 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     await emit.onEach(
       _websocketStream,
       onData: (message) {
-        if (message is GameStart) {
-          print("GameReady from message");
-          emit(GameReady.fromMessage(message, _user));
-        }
+        switch ((message as Message).messageType) {
+          case Event.gameStart:
+            print("GameReady from message");
+            emit(GameReady.fromMessage(message as GameStart, _user));
+            break;
 
-        if (message is RoundStart) {
-          print("GameReady update dice");
-          emit((state as GameReady).updateDice(message));
-        }
+          case Event.roundStart:
+            print("GameReady update dice");
+            emit((state as GameReady).updateDice(message as RoundStart));
+            break;
 
-        if (message is RoundEnd) {
-          GameReady currentState = state as GameReady;
-          print("Round end state");
-          emit(RoundEndState(message));
-          print("Return game state");
-          emit(currentState);
-        }
+          case Event.roundEnd:
+            GameReady currentState = state as GameReady;
+            print("Round end state");
+            emit(RoundEndState(message as RoundEnd));
+            print("Return game state");
+            emit(currentState);
+            break;
 
-        else if (message is LobbyUpdate) {
-
-          if (state is GameLobbyReady) {
-            print("LobbyUpdate update");
-            emit((state as GameLobbyReady).update(message));
-          }
-
-          if (state is GameReady) {
-            print("GameReady update");
-            emit((state as GameReady).update(message));
-          }
-
-          else {
-            if (message.progression == GameProgression.inGame) {
-              emit(GameReady(
-                _user,
-                message.rules!,
-                message.players!,
-                const [],
-              ));
+          case Event.lobbyUpdate:
+            message = message as LobbyUpdate;
+            if (state is GameLobbyReady) {
+              print("LobbyUpdate update");
+              emit((state as GameLobbyReady).update(message));
               return;
             }
-            print("LobbyUpdate from message");
-            emit(GameLobbyReady.fromMessage(message, _user));
-          }
-        }
-        else if (message is ReadyConfirmation) {
-          emit((state as GameLobbyReady).copyWith(
-            readyLoading: false,
-            userReady: message.success,
-            error: message.error
-          ));
+
+            if (state is GameReady) {
+              print("GameReady update");
+              emit((state as GameReady).update(message));
+              return;
+            }
+
+            else {
+              if (message.progression == GameProgression.inGame) {
+                emit(GameReady(
+                  _user,
+                  message.rules!,
+                  message.players,
+                  const [],
+                ));
+                return;
+              }
+              print("LobbyUpdate from message");
+              emit(GameLobbyReady.fromMessage(message, _user));
+              return;
+            }
+
+          case Event.readyConfirmation:
+            message as ReadyConfirmation;
+            emit((state as GameLobbyReady).copyWith(
+              readyLoading: false,
+              userReady: message.success,
+              error: message.error
+            ));
+            break;
+
+          default:
+            print("Unknown message type");
+            break;
         }
       }
     );
