@@ -18,11 +18,14 @@ abstract class GameRepository {
   Either<Failure, DiceUser> isUserLoggedIn();
   Future<Either<Failure, bool>> isRoomCodeValid(String roomCode, String playerId);
   Future<Either<Failure, Stream>> joinRoom(String roomCode);
+  Future<Either<Failure, Stream>> getGameStream();
   Either<Failure, void> sendMessage(Message message);
   void exit();
 }
 
 class GameFailure extends Failure {}
+
+class RoomNotJoined extends GameFailure {}
 
 class RoomCodeInvalid extends GameFailure {}
 

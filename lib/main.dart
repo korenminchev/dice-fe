@@ -3,6 +3,7 @@ import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/pages/game_page.dart';
+import 'package:dice_fe/features/game/app/pages/lobby/lobby_page.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/features/join/app/pages/join_page.dart';
 import 'package:dice_fe/injection_container.dart';
@@ -52,6 +53,16 @@ class DiceApp extends StatelessWidget {
               return const CreateUserPage();
             } else if (settings.name == CreateGamePage.route) {
               return const CreateGamePage();
+            } else if (settings.name!.startsWith(LobbyPage.routeName)) {
+              final roomCode = settings.name!.split('/').last;
+              if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Invalid room code'),
+                  ),
+                );
+              }
+              return LobbyPage(roomCode: roomCode);
             } else if (settings.name!.startsWith(GamePage.routeName)) {
               final roomCode = settings.name!.split('/').last;
               if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {

@@ -11,6 +11,7 @@ import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 class GameRepositoryImpl extends GameRepository {
   final DiceBackend _backend;
   final AuthorizationRepository _authorizationRepository;
+  bool joinedRoom = false;
 
   GameRepositoryImpl(this._backend, this._authorizationRepository);
 
@@ -24,7 +25,8 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   @override
-  Future<Either<GameFailure, bool>> isRoomCodeValid(String roomCode, String playerId) async {
+  Future<Either<GameFailure, bool>> isRoomCodeValid(
+      String roomCode, String playerId) async {
     if (roomCode.length != 4 || !RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
       return Future.value(Left(RoomCodeInvalid()));
     }
@@ -52,18 +54,33 @@ class GameRepositoryImpl extends GameRepository {
   @override
   Future<Either<GameFailure, Stream>> joinRoom(String roomCode) async {
     final joinRoomBackendResult = await _backend.join(roomCode);
-    return joinRoomBackendResult.fold(
-      (failure) {
-        print("Failed getting BE stream");
-        return Left(NetworkError());
-      },
-      (stream) => Right(backendMessage(stream))
-    );
+    return joinRoomBackendResult.fold((failure) {
+      print("Failed getting BE stream");
+      return Left(NetworkError());
+    }, (stream) {
+      joinedRoom = true;
+      return Right(backendMessage(stream));
+    });
+  }
+
+  @override
+  Future<Either<GameFailure, Stream>> getGameStream() async {
+    if (!joinedRoom) {
+      return Left(RoomNotJoined());
+    }
+    final getGameStreamBackendResult = await _backend.getGameWs();
+    return getGameStreamBackendResult.fold((failure) {
+      print("Failed getting BE stream");
+      return Left(NetworkError());
+    }, (stream) {
+      return Right(backendMessage(stream));
+    });
   }
 
   Stream<Message> backendMessage(Stream stream) async* {
     await for (final message in stream) {
-      Map<String, dynamic> jsonMessage = json.decode(message) as Map<String, dynamic>;
+      Map<String, dynamic> jsonMessage =
+          json.decode(message) as Map<String, dynamic>;
       print(jsonMessage);
       yield Message.fromJson(jsonMessage);
     }
@@ -73,9 +90,7 @@ class GameRepositoryImpl extends GameRepository {
   Either<Failure, void> sendMessage(Message message) {
     final sendMessageBackendResult = _backend.sendToWS(message.toJson());
     return sendMessageBackendResult.fold(
-      (failure) => Left(failure),
-      (_) => const Right(null)
-    );
+        (failure) => Left(failure), (_) => const Right(null));
   }
 
   @override
