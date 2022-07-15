@@ -10,13 +10,14 @@ class PrimaryButton extends StatelessWidget {
   final List<PopupMenuEntry<dynamic>> Function(BuildContext)? popupActionsBuilder;
   final void Function(dynamic)? onPopupItemSelected;
   const PrimaryButton(
-    {required this.text,
-    required this.onTap,
-    this.width,
-    this.height,
-    this.popupActionsBuilder,
-    this.onPopupItemSelected,
-    Key? key}) : super(key: key);
+      {required this.text,
+      required this.onTap,
+      this.width,
+      this.height,
+      this.popupActionsBuilder,
+      this.onPopupItemSelected,
+      Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +27,17 @@ class PrimaryButton extends StatelessWidget {
       children: [
         TextButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              onTap != null ? AppUI.primaryColor : AppUI.lightGrayColor),
+            backgroundColor: MaterialStateProperty.all<Color>(onTap != null ? AppUI.primaryColor : AppUI.lightGrayColor),
             splashFactory: NoSplash.splashFactory,
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: popupActionsBuilder == null ?
-                    BorderRadius.circular(12.0) :
-                    const BorderRadius.horizontal(left: Radius.circular(12.0))
-              )
-            )
+                borderRadius: popupActionsBuilder == null
+                    ? BorderRadius.circular(12.0)
+                    : const BorderRadius.horizontal(
+                        left: Radius.circular(12.0),
+                      ),
+              ),
+            ),
           ),
           onPressed: onTap,
           child: SizedBox(
@@ -66,23 +68,22 @@ class PrimaryButton extends StatelessWidget {
         ),
         if (popupActionsBuilder != null)
           PopupMenuButton(
-          itemBuilder: popupActionsBuilder!,
-          onSelected: onPopupItemSelected,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: AppUI.primaryColor,
-              borderRadius: BorderRadius.horizontal(
-                right: Radius.circular(12.0),
-              )
+            itemBuilder: popupActionsBuilder!,
+            onSelected: onPopupItemSelected,
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: AppUI.primaryColor,
+                  borderRadius: BorderRadius.horizontal(
+                    right: Radius.circular(12.0),
+                  )),
+              width: width == null ? AppUI.widthUnit * 9 : width! / 4,
+              height: height ?? AppUI.heightUnit * 7,
+              child: const Icon(
+                Icons.more_horiz,
+                color: Colors.white,
+              ),
             ),
-            width: width == null ? AppUI.widthUnit * 9 : width! / 4,
-            height: height ?? AppUI.heightUnit * 7,
-            child: const Icon(
-              Icons.more_horiz,
-              color: Colors.white,
-            ),
-          ),
-        )
+          )
       ],
     );
   }
