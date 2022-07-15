@@ -1,6 +1,10 @@
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
+import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
+import 'package:dice_fe/features/home/pages/home_page.dart';
+import 'package:dice_fe/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 
 enum PlayerPickerSide { left, right }
@@ -17,36 +21,56 @@ class LobbyController extends Controller {
   Function()? onReady;
   String? errorMessage;
   final GameRepository _gameRepository;
-  LobbyController(this.roomCode, this._gameRepository);
+  LobbyController(this.roomCode, this._gameRepository) : super();
 
   @override
-  void initListeners() {
-    bool codeValid = false;
-    // Check if user is logged in
-    final logedInResult = _gameRepository.isUserLoggedIn();
-    logedInResult.fold(
-      (failure) async {
-        // TODO: Push login screen
-      },
-      (user) {
-        currentPlayer = user;
-      },
-    );
+  void initListeners() {}
 
-    if (currentPlayer == null) {
-      return;
-    }
+  @override
+  void onInitState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("Here");
+      bool codeValid = false;
+      // Check if user is logged in
+      final logedInResult = _gameRepository.isUserLoggedIn();
+      logedInResult.fold(
+        (failure) async {
+          await Navigator.pushNamed(getContext(), CreateUserPage.routeName, arguments: (DiceUser createdUser) {
+            Navigator.pop(getContext());
+            currentPlayer = createdUser;
+          });
+        },
+        (user) {
+          currentPlayer = user;
+        },
+      );
 
-    // Check room code is valid
-    _gameRepository
-        .isRoomCodeValid(roomCode, currentPlayer!.id)
-        .then((isRoomCodeValid) => isRoomCodeValid.fold((failure) => /* TODO: Pop and show error*/ null, (joinable) {
+      if (currentPlayer == null) {
+        return;
+      }
+
+      // Check room code is valid
+      _gameRepository.isRoomCodeValid(roomCode, currentPlayer!.id).then(
+            (isRoomCodeValid) => isRoomCodeValid.fold((failure) {
+              onCriticalError("Room code is invalid");
+            }, (joinable) {
               if (joinable) {
                 handleMessagesStream();
               } else {
-                // TODO: Pop and show error
+                onCriticalError("Room code is invalid");
               }
-            }));
+            }),
+          );
+    });
+  }
+
+  void onCriticalError(String message) {
+    ScaffoldMessenger.of(getContext()).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+    Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
   }
 
   void handleMessagesStream() {}

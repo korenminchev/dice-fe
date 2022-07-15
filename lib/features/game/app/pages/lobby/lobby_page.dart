@@ -22,13 +22,13 @@ class LobbyPage extends View {
 
 class LobbyPageState extends ViewState<LobbyPage, LobbyController> {
   String roomCode;
-
   LobbyPageState(this.roomCode) : super(LobbyController(roomCode, serviceLocator<GameRepository>()));
 
   @override
   Widget get view {
     AppUI.setUntitsSize(context);
     return Scaffold(
+      key: globalKey,
       drawer: const DiceDrawer(),
       appBar: AppBar(
         title: const DiceAppBarTitle(),

@@ -37,7 +37,7 @@ class JoinPage extends StatelessWidget {
     return BlocConsumer<JoinBloc, JoinState>(
       listener: (context, state) {
         if (state is JoinSuccess) {
-          Navigator.of(context).pushReplacementNamed('/game/${state.roomCode}');
+          Navigator.of(context).pushReplacementNamed('/lobby/${state.roomCode}');
         }
       },
       builder: (context, state) {

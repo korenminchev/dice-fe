@@ -1,5 +1,4 @@
 import 'package:dice_fe/core/domain/version.dart';
-import 'package:dice_fe/core/widgets/app_ui.dart';
 import 'package:dice_fe/features/create_game/create_game_page.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/app/pages/game_page.dart';
@@ -9,6 +8,7 @@ import 'package:dice_fe/features/join/app/pages/join_page.dart';
 import 'package:dice_fe/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -29,6 +29,7 @@ class DiceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterCleanArchitecture.debugModeOn();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
