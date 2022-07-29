@@ -22,53 +22,33 @@ class LobbyPage extends View {
 
 class LobbyPageState extends ViewState<LobbyPage, LobbyController> {
   String roomCode;
-  LobbyPageState(this.roomCode) : super(LobbyController(roomCode, serviceLocator<GameRepository>()));
+  LobbyPageState(this.roomCode)
+      : super(LobbyController(roomCode, serviceLocator<GameRepository>()));
 
   @override
   Widget get view {
     AppUI.setUntitsSize(context);
-    return Scaffold(
-      key: globalKey,
-      drawer: const DiceDrawer(),
-      appBar: AppBar(
-        title: const DiceAppBarTitle(),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              showDialog(context: context, builder: (context) => buildExitConfirmationDialog(context));
-            },
-          ),
-        ],
-      ),
-      body: buildLobbyPage(),
-    );
-  }
-
-  Widget buildExitConfirmationDialog(BuildContext context) {
-    return AlertDialog(
-      title: const Text(
-        "Are you sure you want to exit?",
-        style: TextStyle(
-          fontSize: 24,
-        ),
-      ),
-      actions: [
-        TextButton(
-          child: const Text("Leave", style: TextStyle(fontSize: 20, color: Colors.red)),
-          onPressed: () {},
-        ),
-        TextButton(
-          child: const Text(
-            "Stay",
-            style: TextStyle(fontSize: 20),
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
+    return Builder(
+        key: globalKey,
+        builder: (context) {
+          return Scaffold(
+            drawer: const DiceDrawer(),
+            appBar: AppBar(
+              title: const DiceAppBarTitle(),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    LobbyController controller =
+                        FlutterCleanArchitecture.getController<LobbyController>(context, listen: false);
+                    showDialog(context: context, builder: (context) => buildExitConfirmationDialog(context, controller));
+                  },
+                ),
+              ],
+            ),
+            body: buildLobbyPage(),
+          );
+        });
   }
 
   Widget buildLobbyPage() {
@@ -105,6 +85,32 @@ class LobbyPageState extends ViewState<LobbyPage, LobbyController> {
       ),
     );
   }
+}
+
+Widget buildExitConfirmationDialog(BuildContext context, LobbyController controller) {
+  return AlertDialog(
+    title: const Text(
+      "Are you sure you want to exit?",
+      style: TextStyle(
+        fontSize: 24,
+      ),
+    ),
+    actions: [
+      TextButton(
+        child: const Text("Leave", style: TextStyle(fontSize: 20, color: Colors.red)),
+        onPressed: controller.leaveRoom,
+      ),
+      TextButton(
+        child: const Text(
+          "Stay",
+          style: TextStyle(fontSize: 20),
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
 }
 
 class PlayerList extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
+import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
@@ -19,6 +20,7 @@ class LobbyController extends Controller {
   GameRules rules = GameRules(exactAllowed: true, pasoAllowed: true, initialDiceCount: 5);
   bool readyLoading = false;
   Function()? onReady;
+  late final Stream _websocketStream;
   String? errorMessage;
   final GameRepository _gameRepository;
   LobbyController(this.roomCode, this._gameRepository) : super();
@@ -28,19 +30,20 @@ class LobbyController extends Controller {
 
   @override
   void onInitState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       print("Here");
       bool codeValid = false;
       // Check if user is logged in
       final logedInResult = _gameRepository.isUserLoggedIn();
-      logedInResult.fold(
+      await logedInResult.fold(
         (failure) async {
           await Navigator.pushNamed(getContext(), CreateUserPage.routeName, arguments: (DiceUser createdUser) {
             Navigator.pop(getContext());
+            print(createdUser);
             currentPlayer = createdUser;
           });
         },
-        (user) {
+        (user) async {
           currentPlayer = user;
         },
       );
@@ -55,7 +58,7 @@ class LobbyController extends Controller {
               onCriticalError("Room code is invalid");
             }, (joinable) {
               if (joinable) {
-                handleMessagesStream();
+                _joinRoom();
               } else {
                 onCriticalError("Room code is invalid");
               }
@@ -73,7 +76,35 @@ class LobbyController extends Controller {
     Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
   }
 
-  void handleMessagesStream() {}
+  void _joinRoom() async {
+    final streamResult = await _gameRepository.joinRoom(roomCode);
+    streamResult.fold((failure) {
+      onCriticalError("Network error");
+    }, (stream) {
+      _websocketStream = stream;
+      _handleBackendStream();
+    });
+  }
+
+  void _handleBackendStream() {
+    _websocketStream.listen((message) {
+      print("Got Message: ${(message as Message).messageType}");
+      switch ((message as Message).messageType) {
+        case Event.lobbyUpdate:
+          message = message as LobbyUpdate;
+          players = message.players;
+          rules = message.rules ?? rules;
+          break;
+      }
+      refreshUI();
+    });
+  }
+
+  void leaveRoom() {
+    _gameRepository.sendMessage(PlayerLeave());
+    _gameRepository.exit();
+    Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
+  }
 
   void selectPlayer(PlayerPickerSide side, DiceUser? user) {
     if (side == PlayerPickerSide.left) {
