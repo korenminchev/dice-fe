@@ -26,14 +26,12 @@ class DiceBackend {
 
   Future<Either<ServerFailure, http.Response>> _get(String url) async {
     print('GET: $url');
-    final response = await http.get(
-      Uri.parse('$serverUrl/$url'),
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      });
+    final response = await http.get(Uri.parse('$serverUrl/$url'), headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    });
     if (response.statusCode == 200) {
       return Right(response);
     } else {
@@ -43,20 +41,17 @@ class DiceBackend {
     }
   }
 
-  Future<Either<ServerFailure, http.Response>> _post(String url,
-      {Map<String, dynamic>? body}) async {
+  Future<Either<ServerFailure, http.Response>> _post(String url, {Map<String, dynamic>? body}) async {
     print('POST: $url');
     print(json.encode(body));
-    final response = await http.post(
-      Uri.parse('$serverUrl/$url'),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
-        "Access-Control-Allow-Credentials": "true", // Required for cookies, authorization headers with HTTPS
-        "Access-Control-Allow-Origin": "*",
+    final response = await http.post(Uri.parse('$serverUrl/$url'),
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
+          "Access-Control-Allow-Credentials": "true", // Required for cookies, authorization headers with HTTPS
+          "Access-Control-Allow-Origin": "*",
         },
-      body: json.encode(body)
-    );
+        body: json.encode(body));
     if (response.statusCode == 200) {
       print("RESPONSE: ${response.statusCode}");
       print(response.body);
@@ -69,9 +64,9 @@ class DiceBackend {
 
   Future<Either<Failure, Stream>> join(String roomCode) async {
     try {
-      _gameChannel = HtmlWebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
-    }
-    catch(e) {
+      _gameChannel =
+          HtmlWebSocketChannel.connect(Uri.parse('$serverUrl/games/$roomCode/ws/'.replaceFirst("https", "wss")));
+    } catch (e) {
       print(e);
       return Left(Failure());
     }
@@ -83,7 +78,7 @@ class DiceBackend {
     if (_gameChannel == null) {
       return Left(Failure());
     }
-    
+
     return Right(_gameChannel!.stream);
   }
 
@@ -105,40 +100,33 @@ class DiceBackend {
   }
 
   Future<Either<ServerFailure, String>> createGame(GameRules rules) async {
-    final response = await _post("games/",
-      body: {"game_rules": rules.toJson()});
+    final response = await _post("games/", body: {"game_rules": rules.toJson()});
     return response.fold(
       (failure) => Left(failure),
       (response) => Right(json.decode(response.body)),
     );
   }
 
-  Future<Either<ServerFailure, GameProgression>> isRoomCodeJoinable(String roomCode) async {
+  Future<Either<ServerFailure, GameProgression>> getGameProgression(String roomCode) async {
     final response = await _get("games/$roomCode/state");
-    return response.fold(
-      (failure) => Left(failure),
-      (response) {
-        GameProgression? progression = gameProgressionFromString[json.decode(response.body)];
-        if (progression == null) {
-          return Left(ServerFailure(response.statusCode, "Communication Error"));
-        }
-        return Right(progression);
+    return response.fold((failure) => Left(failure), (response) {
+      GameProgression? progression = gameProgressionFromString[json.decode(response.body)];
+      if (progression == null) {
+        return Left(ServerFailure(response.statusCode, "Communication Error"));
       }
-    );
+      return Right(progression);
+    });
   }
 
   Future<Either<ServerFailure, bool>> isPlayerInGame(String roomCode, String playerId) async {
     final response = await _get("games/$roomCode/$playerId");
-    return response.fold(
-      (failure) => Left(failure),
-      (response) {
-        final result = json.decode(response.body);
-        if (result.runtimeType != bool) {
-          return Left(ServerFailure(response.statusCode, "Communication Error"));
-        }
-        return Right(result as bool);
+    return response.fold((failure) => Left(failure), (response) {
+      final result = json.decode(response.body);
+      if (result.runtimeType != bool) {
+        return Left(ServerFailure(response.statusCode, "Communication Error"));
       }
-    );
+      return Right(result as bool);
+    });
   }
 
   Either<Failure, void> sendToWS(Map<String, dynamic> message) {

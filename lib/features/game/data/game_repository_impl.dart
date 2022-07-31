@@ -25,15 +25,14 @@ class GameRepositoryImpl extends GameRepository {
   }
 
   @override
-  Future<Either<GameFailure, bool>> isRoomCodeValid(
-      String roomCode, String playerId) async {
+  Future<Either<GameFailure, bool>> isRoomCodeValid(String roomCode, String playerId) async {
     if (roomCode.length != 4 || !RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
       return Future.value(Left(RoomCodeInvalid()));
     }
 
     final results = await Future.wait([
       _backend.isPlayerInGame(roomCode, playerId),
-      _backend.isRoomCodeJoinable(roomCode),
+      _backend.getGameProgression(roomCode),
     ]);
 
     return results[0].fold(
@@ -49,6 +48,11 @@ class GameRepositoryImpl extends GameRepository {
         );
       },
     );
+  }
+
+  @override
+  Future<Either<Failure, bool>> isPlayerInGame(String roomCode, String playerId) {
+    return _backend.isPlayerInGame(roomCode, playerId);
   }
 
   @override
@@ -79,8 +83,7 @@ class GameRepositoryImpl extends GameRepository {
 
   Stream<Message> backendMessage(Stream stream) async* {
     await for (final message in stream) {
-      Map<String, dynamic> jsonMessage =
-          json.decode(message) as Map<String, dynamic>;
+      Map<String, dynamic> jsonMessage = json.decode(message) as Map<String, dynamic>;
       print(jsonMessage);
       yield Message.fromJson(jsonMessage);
     }
@@ -89,12 +92,16 @@ class GameRepositoryImpl extends GameRepository {
   @override
   Either<Failure, void> sendMessage(Message message) {
     final sendMessageBackendResult = _backend.sendToWS(message.toJson());
-    return sendMessageBackendResult.fold(
-        (failure) => Left(failure), (_) => const Right(null));
+    return sendMessageBackendResult.fold((failure) => Left(failure), (_) => const Right(null));
   }
 
   @override
   void exit() {
     _backend.closeWS();
+  }
+
+  @override
+  Future<Either<Failure, GameProgression>> getGameProgression(String roomCode) async {
+    return await _backend.getGameProgression(roomCode);
   }
 }

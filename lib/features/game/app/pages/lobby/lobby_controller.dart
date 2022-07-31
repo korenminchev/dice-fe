@@ -23,6 +23,10 @@ class LobbyController extends Controller {
   late final Stream _websocketStream;
   String? errorMessage;
   final GameRepository _gameRepository;
+  GameProgression? gameProgression;
+
+  int totalDiceCount = 0;
+  List<int> currentPlayerDice = [];
   LobbyController(this.roomCode, this._gameRepository) : super();
 
   @override
@@ -64,6 +68,16 @@ class LobbyController extends Controller {
               }
             }),
           );
+
+      await _gameRepository.getGameProgression(roomCode).then(
+            (either) => {
+              either.fold((failure) => onCriticalError("Network Error"),
+                  (_gameProgression) => gameProgression = _gameProgression),
+            },
+          );
+
+      print(gameProgression);
+      refreshUI();
     });
   }
 
@@ -78,6 +92,7 @@ class LobbyController extends Controller {
 
   void _joinRoom() async {
     final streamResult = await _gameRepository.joinRoom(roomCode);
+    print("Joined room");
     streamResult.fold((failure) {
       onCriticalError("Network error");
     }, (stream) {
@@ -94,6 +109,33 @@ class LobbyController extends Controller {
           message = message as LobbyUpdate;
           players = message.players;
           rules = message.rules ?? rules;
+          if (gameProgression == GameProgression.inGame) {
+            totalDiceCount = 0;
+            players.forEach((player) {
+              totalDiceCount += player.currentDiceCount ?? 0;
+            });
+          }
+          break;
+
+        case Event.readyConfirmation:
+          message = message as ReadyConfirmation;
+          userReady = message.success;
+          readyLoading = false;
+          break;
+
+        case Event.gameStart:
+          message = message as GameStart;
+          gameProgression = GameProgression.inGame;
+          print("Game started");
+          break;
+
+        case Event.roundStart:
+          print("Round started");
+          message = message as RoundStart;
+          currentPlayerDice = message.dice.toList()..sort();
+          break;
+
+        default:
           break;
       }
       refreshUI();
@@ -121,8 +163,6 @@ class LobbyController extends Controller {
   void onReadyClicked() async {
     readyLoading = true;
     refreshUI();
-    await Future.delayed(const Duration(seconds: 1));
-    readyLoading = false;
-    refreshUI();
+    _gameRepository.sendMessage(PlayerReady(!userReady, currentPlayer!.id, currentPlayer!.id));
   }
 }

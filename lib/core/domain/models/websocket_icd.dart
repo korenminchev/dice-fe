@@ -68,7 +68,7 @@ class GameStart extends Message {
 
 @JsonSerializable()
 class RoundStart extends Message {
-  RoundStart({this.dice = const []}) : super(Event.none);
+  RoundStart({this.dice = const []}) : super(Event.roundStart);
   List<int> dice;
 
   factory RoundStart.fromJson(Map<String, dynamic> json) => _$RoundStartFromJson(json);

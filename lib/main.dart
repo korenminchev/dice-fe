@@ -44,55 +44,53 @@ class DiceApp extends StatelessWidget {
       initialRoute: HomePage.routeName,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(
-          settings: settings,
-          builder: (context) {
-            if (settings.name == HomePage.routeName) {
-              return const HomePage();
-            } else if (settings.name == JoinPage.routeName) {
-              return const JoinPage();
-            } else if (settings.name == CreateUserPage.routeName) {
-              return const CreateUserPage();
-            } else if (settings.name == CreateGamePage.route) {
-              return const CreateGamePage();
-            } else if (settings.name!.startsWith(LobbyPage.routeName)) {
-              final roomCode = settings.name!.split('/').last;
-              if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
-                return const Scaffold(
-                  body: Center(
-                    child: Text('Invalid room code'),
-                  ),
-                );
+            settings: settings,
+            builder: (context) {
+              if (settings.name == HomePage.routeName) {
+                return const HomePage();
+              } else if (settings.name == JoinPage.routeName) {
+                return const JoinPage();
+              } else if (settings.name == CreateUserPage.routeName) {
+                return const CreateUserPage();
+              } else if (settings.name == CreateGamePage.route) {
+                return const CreateGamePage();
+              } else if (settings.name!.startsWith(LobbyPage.routeName)) {
+                final roomCode = settings.name!.split('/').last;
+                if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Invalid room code'),
+                    ),
+                  );
+                }
+                return LobbyPage(roomCode: roomCode);
+              } else if (settings.name!.startsWith(GamePage.routeName)) {
+                final roomCode = settings.name!.split('/').last;
+                if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Invalid room code'),
+                    ),
+                  );
+                }
+                return GamePage(roomCode: roomCode);
               }
-              return LobbyPage(roomCode: roomCode);
-            } else if (settings.name!.startsWith(GamePage.routeName)) {
-              final roomCode = settings.name!.split('/').last;
-              if (!RegExp(r'^[0-9]+$').hasMatch(roomCode)) {
-                return const Scaffold(
-                  body: Center(
-                    child: Text('Invalid room code'),
-                  ),
-                );
-              }
-              return GamePage(roomCode: roomCode);
-            }
-            
-            return const Scaffold(
-              body: Center(
-                child: Text('404'),
-              ),
-            );
-          }
-        );
+
+              return const Scaffold(
+                body: Center(
+                  child: Text('404'),
+                ),
+              );
+            });
       },
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        fontFamily: "Lato",
-        splashFactory: NoSplash.splashFactory,
-        splashColor: Colors.transparent,
-        visualDensity: const VisualDensity(horizontal: -2, vertical: -2)
-      ),
+          brightness: Brightness.dark,
+          fontFamily: "Lato",
+          splashFactory: NoSplash.splashFactory,
+          splashColor: Colors.transparent,
+          visualDensity: const VisualDensity(horizontal: -1, vertical: -1)),
     );
   }
 }

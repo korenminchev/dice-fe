@@ -12,12 +12,9 @@ class JoinRepositoryImpl implements JoinRepository {
   @override
   Future<Either<JoinFailure, void>> join(String roomCode) async {
     final joinBackendResult = await _backend.join(roomCode);
-    return joinBackendResult.fold(
-      (failure) {
-        return Left(RoomCodeInvalid());
-      },
-      (_) => const Right(null)
-    );
+    return joinBackendResult.fold((failure) {
+      return Left(RoomCodeInvalid());
+    }, (_) => const Right(null));
   }
 
   @override
@@ -32,15 +29,12 @@ class JoinRepositoryImpl implements JoinRepository {
 
   @override
   Future<Either<JoinFailure, bool>> isRoomCodeJoinable(String roomCode) async {
-    final isRoomCodeJoinableBackendResult = await _backend.isRoomCodeJoinable(roomCode);
-    return isRoomCodeJoinableBackendResult.fold(
-      (failure) {
-        if (failure.statusCode == 404) {
-          return Left(RoomCodeInvalid());
-        }
-        return Left(JoinFailure());
-      },
-      (progression) => Right(progression == game.GameProgression.lobby)
-    );
+    final isRoomCodeJoinableBackendResult = await _backend.getGameProgression(roomCode);
+    return isRoomCodeJoinableBackendResult.fold((failure) {
+      if (failure.statusCode == 404) {
+        return Left(RoomCodeInvalid());
+      }
+      return Left(JoinFailure());
+    }, (progression) => Right(progression == game.GameProgression.lobby));
   }
 }

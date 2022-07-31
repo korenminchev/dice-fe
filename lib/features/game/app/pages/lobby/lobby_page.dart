@@ -22,8 +22,7 @@ class LobbyPage extends View {
 
 class LobbyPageState extends ViewState<LobbyPage, LobbyController> {
   String roomCode;
-  LobbyPageState(this.roomCode)
-      : super(LobbyController(roomCode, serviceLocator<GameRepository>()));
+  LobbyPageState(this.roomCode) : super(LobbyController(roomCode, serviceLocator<GameRepository>()));
 
   @override
   Widget get view {
@@ -32,48 +31,175 @@ class LobbyPageState extends ViewState<LobbyPage, LobbyController> {
         key: globalKey,
         builder: (context) {
           return Scaffold(
-            drawer: const DiceDrawer(),
-            appBar: AppBar(
-              title: const DiceAppBarTitle(),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.exit_to_app),
-                  onPressed: () {
-                    LobbyController controller =
-                        FlutterCleanArchitecture.getController<LobbyController>(context, listen: false);
-                    showDialog(context: context, builder: (context) => buildExitConfirmationDialog(context, controller));
-                  },
-                ),
-              ],
-            ),
-            body: buildLobbyPage(),
-          );
+              drawer: const DiceDrawer(),
+              appBar: AppBar(
+                title: const DiceAppBarTitle(),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      LobbyController controller =
+                          FlutterCleanArchitecture.getController<LobbyController>(context, listen: false);
+                      showDialog(
+                          context: context, builder: (context) => buildExitConfirmationDialog(context, controller));
+                    },
+                  ),
+                ],
+              ),
+              body: ControlledWidgetBuilder<LobbyController>(
+                builder: (context, controller) {
+                  switch (controller.gameProgression) {
+                    case GameProgression.lobby:
+                      return LobbyPageView(roomCode: roomCode);
+                    case GameProgression.inGame:
+                      return const GamePageView();
+                    case null:
+                      return const Center(child: CircularProgressIndicator.adaptive());
+                  }
+                },
+              ));
         });
   }
+}
 
-  Widget buildLobbyPage() {
-    AppUI.setUntitsSize(context);
+class GamePageView extends StatelessWidget {
+  const GamePageView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    LobbyController lobbyController = FlutterCleanArchitecture.getController<LobbyController>(context);
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(height: 3 * AppUI.heightUnit),
+          Text(
+            "Dice Count - ${lobbyController.totalDiceCount}",
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 3 * AppUI.heightUnit),
+          GridView.count(
+              childAspectRatio: AppUI.widthUnit / (AppUI.heightUnit / 4),
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 3 * AppUI.widthUnit,
+              mainAxisSpacing: AppUI.heightUnit,
+              padding: EdgeInsets.symmetric(horizontal: 4 * AppUI.widthUnit),
+              children: lobbyController.players
+                  .map((player) => Text(
+                        "${player.name} - ${player.currentDiceCount}",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ))
+                  .toList()),
+          SizedBox(height: 2 * AppUI.heightUnit),
+          const Divider(),
+          SizedBox(height: 2 * AppUI.heightUnit),
+          const Text(
+            "Your Dice",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+          SizedBox(
+            height: 40 * AppUI.heightUnit,
+            child: GridView.count(
+              childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              controller: ScrollController(keepScrollOffset: false),
+              padding: EdgeInsets.zero,
+              children: lobbyController.currentPlayerDice
+                  .map(
+                    (dice) => Padding(
+                      padding: EdgeInsets.all(AppUI.heightUnit * 2),
+                      child: Image.asset("assets/images/Dice/Big/${dice.toString()}.png"),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          Expanded(child: SizedBox(height: 15 * AppUI.heightUnit)),
+          PrimaryButton(
+            text: "Accuse!",
+            onTap: () {
+              // showDialog(
+              //   context: context,
+              //   builder: (context) => buildAccusationPopup(context, state, totalDiceCount, AccusationType.standard),
+              // );
+            },
+            // popupActionsBuilder: advancedRules
+            //     ? (BuildContext context) => <PopupMenuEntry<AccusationType>>[
+            //           if (state.rules.pasoAllowed!)
+            //             const PopupMenuItem<AccusationType>(
+            //               value: AccusationType.paso,
+            //               child: Text('Paso'),
+            //             ),
+            //           if (state.rules.exactAllowed!)
+            //             const PopupMenuItem<AccusationType>(
+            //               value: AccusationType.exact,
+            //               child: Text('Exact'),
+            //             ),
+            //         ]
+            //     : null,
+            // onPopupItemSelected: advancedRules
+            //     ? (accusationType) {
+            //         switch (accusationType) {
+            //           case AccusationType.paso:
+            //             break;
+
+            //           case AccusationType.exact:
+            //             showDialog(
+            //                 context: context,
+            //                 builder: (context) =>
+            //                     buildAccusationPopup(context, state, totalDiceCount, AccusationType.exact));
+            //             break;
+
+            //           default:
+            //             break;
+            //         }
+            //       }
+            //     : null,
+          ),
+          SizedBox(height: 4 * AppUI.heightUnit),
+        ],
+      ),
+    );
+  }
+}
+
+class LobbyPageView extends StatelessWidget {
+  final String roomCode;
+  const LobbyPageView({required this.roomCode, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 4 * AppUI.heightUnit),
-          Text("Room ${widget.roomCode}", style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w700)),
+          Text("Room $roomCode", style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w700)),
           SizedBox(height: 4 * AppUI.heightUnit),
           const PlayerList(),
           const Expanded(child: SizedBox()),
-          const Text("Who sits next to you?", style: TextStyle(fontSize: 18)),
-          SizedBox(height: 2 * AppUI.heightUnit),
-          Row(
-            children: [
-              SizedBox(width: 2 * AppUI.widthUnit),
-              const PlayerPicker(PlayerPickerSide.left),
-              SizedBox(width: 3 * AppUI.widthUnit),
-              const PlayerPicker(PlayerPickerSide.right),
-              SizedBox(width: 2 * AppUI.widthUnit),
-            ],
-          ),
-          SizedBox(height: 8 * AppUI.heightUnit),
+          // const Text("Who sits next to you?", style: TextStyle(fontSize: 18)),
+          // SizedBox(height: 2 * AppUI.heightUnit),
+          // Row(
+          //   children: [
+          //     SizedBox(width: 2 * AppUI.widthUnit),
+          //     const PlayerPicker(PlayerPickerSide.left),
+          //     SizedBox(width: 3 * AppUI.widthUnit),
+          //     const PlayerPicker(PlayerPickerSide.right),
+          //     SizedBox(width: 2 * AppUI.widthUnit),
+          //   ],
+          // ),
+          SizedBox(height: 16 * AppUI.heightUnit),
           const Text("Game settings", style: TextStyle(fontSize: 24)),
           SizedBox(height: 2 * AppUI.heightUnit),
           const RulesView(),
@@ -219,7 +345,7 @@ class ReadyButton extends StatelessWidget {
         text: lobbyController.userReady ? "Unready" : "Ready",
         width: MediaQuery.of(context).size.width * 0.8,
         height: 8 * AppUI.heightUnit,
-        onTap: lobbyController.onReady);
+        onTap: lobbyController.onReadyClicked);
   }
 }
 
