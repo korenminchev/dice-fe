@@ -2,16 +2,18 @@ import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/game_rules.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
+import 'package:dice_fe/features/game/domain/models/player_picker_side.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:dice_fe/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 
-enum PlayerPickerSide { left, right }
-
-class LobbyController extends Controller {
+class LobbyController {
   final String roomCode;
+  Function(String) onCriticalError;
+  void Function(void Function()) onMessageReceived;
   List<DiceUser> players = [];
   DiceUser? currentPlayer;
   DiceUser? leftPlayer;
@@ -23,71 +25,62 @@ class LobbyController extends Controller {
   late final Stream _websocketStream;
   String? errorMessage;
   final GameRepository _gameRepository;
-  GameProgression? gameProgression;
+  GameProgression gameProgression = GameProgression.lobby;
 
   int totalDiceCount = 0;
   List<int> currentPlayerDice = [];
-  LobbyController(this.roomCode, this._gameRepository) : super();
+  DiceUser? selectedUser;
+  int? diceLieCount;
+  int? selectedDiceType;
+  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived) : super();
 
   @override
   void initListeners() {}
 
-  @override
-  void onInitState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      print("Here");
-      bool codeValid = false;
-      // Check if user is logged in
-      final logedInResult = _gameRepository.isUserLoggedIn();
-      await logedInResult.fold(
-        (failure) async {
-          await Navigator.pushNamed(getContext(), CreateUserPage.routeName, arguments: (DiceUser createdUser) {
-            Navigator.pop(getContext());
-            print(createdUser);
-            currentPlayer = createdUser;
-          });
-        },
-        (user) async {
-          currentPlayer = user;
-        },
-      );
-
-      if (currentPlayer == null) {
-        return;
-      }
-
-      // Check room code is valid
-      _gameRepository.isRoomCodeValid(roomCode, currentPlayer!.id).then(
-            (isRoomCodeValid) => isRoomCodeValid.fold((failure) {
-              onCriticalError("Room code is invalid");
-            }, (joinable) {
-              if (joinable) {
-                _joinRoom();
-              } else {
-                onCriticalError("Room code is invalid");
-              }
-            }),
-          );
-
-      await _gameRepository.getGameProgression(roomCode).then(
-            (either) => {
-              either.fold((failure) => onCriticalError("Network Error"),
-                  (_gameProgression) => gameProgression = _gameProgression),
-            },
-          );
-
-      print(gameProgression);
-      refreshUI();
-    });
-  }
-
-  void onCriticalError(String message) {
-    ScaffoldMessenger.of(getContext()).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
+  void onInitState(BuildContext context) async {
+    print("Here");
+    bool codeValid = false;
+    // Check if user is logged in
+    final logedInResult = _gameRepository.isUserLoggedIn();
+    await logedInResult.fold(
+      (failure) async {
+        await Navigator.pushNamed(context, CreateUserPage.routeName,
+            arguments: (DiceUser createdUser, BuildContext con) {
+          Future.delayed(const Duration(milliseconds: 500), () => Navigator.pop(con));
+          print(createdUser);
+          currentPlayer = createdUser;
+        });
+      },
+      (user) async {
+        currentPlayer = user;
+      },
     );
-    Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
+
+    if (currentPlayer == null) {
+      return;
+    }
+
+    // Check room code is valid
+    _gameRepository.isRoomCodeValid(roomCode, currentPlayer!.id).then(
+          (isRoomCodeValid) => isRoomCodeValid.fold((failure) {
+            onCriticalError("Room code is invalid");
+          }, (joinable) {
+            if (joinable) {
+              _joinRoom();
+            } else {
+              onCriticalError("Room code is invalid");
+            }
+          }),
+        );
+
+    await _gameRepository.getGameProgression(roomCode).then(
+          (either) => {
+            either.fold((failure) => onCriticalError("Network Error"),
+                (_gameProgression) => gameProgression = _gameProgression),
+          },
+        );
+
+    print(gameProgression);
   }
 
   void _joinRoom() async {
@@ -102,6 +95,7 @@ class LobbyController extends Controller {
   }
 
   void _handleBackendStream() {
+    print("Handling Stream");
     _websocketStream.listen((message) {
       print("Got Message: ${(message as Message).messageType}");
       switch ((message as Message).messageType) {
@@ -138,14 +132,71 @@ class LobbyController extends Controller {
         default:
           break;
       }
-      refreshUI();
+
+      onMessageReceived(() {
+        print("SetState");
+      });
     });
+  }
+
+  String topLieText(AccusationType accusationType) {
+    switch (accusationType) {
+      case AccusationType.standard:
+        return "Who Lied?";
+      case AccusationType.exact:
+        return "Who was exact?";
+      default:
+        return "";
+    }
+  }
+
+  String accuseButtonText(AccusationType accusationType) {
+    switch (accusationType) {
+      case AccusationType.standard:
+        return "Confirm Lier";
+      case AccusationType.exact:
+        return "Confirm Exact";
+      default:
+        return "";
+    }
+  }
+
+  int get lieDiceCount => diceLieCount ?? (totalDiceCount / 3).round() + 1;
+
+  void selectLieUser(DiceUser? selectedUser) {
+    this.selectedUser = selectedUser;
+  }
+
+  void setDiceLieCount(int diceLieCount) {
+    this.diceLieCount = diceLieCount;
+  }
+
+  void selectDiceType(int? selectedDiceTypeIndex) {
+    HapticFeedback.selectionClick();
+    print("Selected dice type: $selectedDiceTypeIndex");
+    selectedDiceType = selectedDiceType == null ? null : selectedDiceTypeIndex! + 1;
+  }
+
+  List<DropdownMenuItem<DiceUser>> get playersWithouthCurrentDropdownItems {
+    List<DiceUser> playersWithouthCurrentPlayer = players.where((player) => player.id != currentPlayer!.id).toList();
+    return playersWithouthCurrentPlayer.map((player) {
+      return DropdownMenuItem(
+        value: player,
+        child: Container(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(player.name)),
+      );
+    }).toList();
+  }
+
+  bool get canAccuse => selectedUser != null && selectedDiceType != null;
+
+  void accuse(AccusationType accusationType) {
+    // Navigator.of(getContext()).pop();
   }
 
   void leaveRoom() {
     _gameRepository.sendMessage(PlayerLeave());
     _gameRepository.exit();
-    Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
+    // Navigator.of(getContext()).popUntil(ModalRoute.withName(HomePage.routeName));
   }
 
   void selectPlayer(PlayerPickerSide side, DiceUser? user) {
@@ -156,13 +207,12 @@ class LobbyController extends Controller {
     }
     if (leftPlayer != null && rightPlayer != null) {
       onReady = onReadyClicked;
-      refreshUI();
+      // refreshUI();
     }
   }
 
   void onReadyClicked() async {
     readyLoading = true;
-    refreshUI();
     _gameRepository.sendMessage(PlayerReady(!userReady, currentPlayer!.id, currentPlayer!.id));
   }
 }

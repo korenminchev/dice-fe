@@ -54,7 +54,7 @@ class _GameLobbyState extends State<GameLobby> {
               ]
             ),
           ),
-          const Expanded(child: SizedBox()),
+          Expanded(child: const SizedBox()),
           const Text("Who sits next to you?", style: TextStyle(fontSize: 18)),
           SizedBox(height: 2 * AppUI.heightUnit),
           Row(
@@ -182,7 +182,7 @@ class _GameLobbyState extends State<GameLobby> {
               SizedBox(width: 4 * AppUI.widthUnit)
             ]
           ),
-          const Expanded(child: SizedBox()),
+          Expanded(child: const SizedBox()),
           if (widget.error != null)
             Padding(
               padding: const EdgeInsets.all(8.0),

@@ -20,9 +20,7 @@ class CreateUserPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: BlocProvider(
-          create: (context) => CreateUserBloc(
-            serviceLocator<UserCreationRepository>()
-          ),
+          create: (context) => CreateUserBloc(serviceLocator<UserCreationRepository>()),
           child: buildCreateUserPage(context),
         ),
       ),
@@ -32,63 +30,54 @@ class CreateUserPage extends StatelessWidget {
   Widget buildCreateUserPage(BuildContext context) {
     TextEditingController nameController = TextEditingController();
 
-    return BlocConsumer<CreateUserBloc, CreateUserState>(
-      listener: (context, state) {
-        if (state is UserCreated) {
-          Function onSuccess = ModalRoute.of(context)!.settings.arguments as Function;
-          onSuccess(state.user);
-        }
-        if (state is CreateUserFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Error creating user"),
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is CreateUserLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        return Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              const Text(
-                "Welcome!\nPlease enter your name:",
-                style: TextStyle(
-                  fontSize: 24,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              DiceTextField(
-                hintText: "Username...",
-                controller: nameController,
-                onChanged: (name) {
-                  BlocProvider.of<CreateUserBloc>(context).add(
-                    LetterTyped(name: name)
-                  );
-                },
-              ),
-              const SizedBox(height: 32),
-              PrimaryButton(
-                text: "Confirm",
-                onTap: state.nameValid
-                  ? () {
-                    BlocProvider.of<CreateUserBloc>(context).add(
-                      CreateUserAction(name: nameController.text),
-                    );
-                  }
-                  : null,
-              )
-            ]
-          )
+    return BlocConsumer<CreateUserBloc, CreateUserState>(listener: (context, state) {
+      if (state is UserCreated) {
+        Function onSuccess = ModalRoute.of(context)!.settings.arguments as Function;
+        onSuccess(state.user, context);
+      }
+      if (state is CreateUserFailure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error creating user"),
+          ),
         );
       }
-    );
+    }, builder: (context, state) {
+      if (state is CreateUserLoading) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return Center(
+          child: Column(children: [
+        const SizedBox(height: 16),
+        const Text(
+          "Welcome!\nPlease enter your name:",
+          style: TextStyle(
+            fontSize: 24,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        DiceTextField(
+          hintText: "Username...",
+          controller: nameController,
+          onChanged: (name) {
+            BlocProvider.of<CreateUserBloc>(context).add(LetterTyped(name: name));
+          },
+        ),
+        const SizedBox(height: 32),
+        PrimaryButton(
+          text: "Confirm",
+          onTap: state.nameValid
+              ? () {
+                  BlocProvider.of<CreateUserBloc>(context).add(
+                    CreateUserAction(name: nameController.text),
+                  );
+                }
+              : null,
+        )
+      ]));
+    });
   }
-
 }
