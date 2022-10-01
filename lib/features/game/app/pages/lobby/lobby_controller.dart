@@ -34,10 +34,7 @@ class LobbyController {
   int? selectedDiceType;
   LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived) : super();
 
-  @override
-  void initListeners() {}
-
-  void onInitState(BuildContext context) async {
+  Future<void> onInitState(BuildContext context) async {
     print("Here");
     bool codeValid = false;
     // Check if user is logged in
@@ -46,8 +43,7 @@ class LobbyController {
       (failure) async {
         await Navigator.pushNamed(context, CreateUserPage.routeName,
             arguments: (DiceUser createdUser, BuildContext con) {
-          Future.delayed(const Duration(milliseconds: 500), () => Navigator.pop(con));
-          print(createdUser);
+          Navigator.pop(con);
           currentPlayer = createdUser;
         });
       },
@@ -56,6 +52,7 @@ class LobbyController {
       },
     );
 
+    print(currentPlayer);
     if (currentPlayer == null) {
       return;
     }
@@ -213,6 +210,7 @@ class LobbyController {
 
   void onReadyClicked() async {
     readyLoading = true;
+    onMessageReceived(() {});
     _gameRepository.sendMessage(PlayerReady(!userReady, currentPlayer!.id, currentPlayer!.id));
   }
 }

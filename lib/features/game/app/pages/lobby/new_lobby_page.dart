@@ -7,6 +7,7 @@ import 'package:dice_fe/features/game/app/widgets/player_list.dart';
 import 'package:dice_fe/features/game/app/widgets/ready_button.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/game/injection_container.dart';
+import 'package:dice_fe/features/home/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dice_fe/features/game/app/widgets/rules_view.dart';
 
@@ -27,8 +28,19 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
   @override
   void initState() {
     super.initState();
-    controller.onInitState(context);
+
+    // Because controller.onInitState is async will be called during the build of LobbyPage
+    // but it pushes a new screen in case of unregistered user, it needs to be called after
+    // LobbyPage is finished building its frame
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.onInitState(context);
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
+
+  Future<void> initializeController() async {}
 
   void onCriticalError(String message) async {}
 
@@ -43,7 +55,10 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
       actions: [
         TextButton(
           child: const Text("Leave", style: TextStyle(fontSize: 20, color: Colors.red)),
-          onPressed: () {},
+          onPressed: () {
+            controller.leaveRoom();
+            Navigator.of(context).popUntil(ModalRoute.withName(HomePage.routeName));
+          },
         ),
         TextButton(
           child: const Text(
@@ -75,6 +90,9 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
         ),
         body: Builder(
           builder: (context) {
+            if (isLoading) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
             switch (controller.gameProgression) {
               case GameProgression.lobby:
                 return lobbyPageView();
@@ -115,8 +133,7 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
           ErrorText(controller.errorMessage),
           controller.readyLoading
               ? const CircularProgressIndicator.adaptive()
-              : ReadyButton(
-                  userReady: controller.userReady, onReadyClicked: () => setState(() => controller.onReadyClicked)),
+              : ReadyButton(userReady: controller.userReady, onReadyClicked: controller.onReadyClicked),
           SizedBox(height: 4 * AppUI.heightUnit),
         ],
       ),
