@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "dice-new"
-  }
+    "default": "dice-new",
+    "production": "liers-dice"
+  },
+  "targets": {}
 }
