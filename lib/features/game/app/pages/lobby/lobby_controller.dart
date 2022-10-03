@@ -32,7 +32,9 @@ class LobbyController {
   DiceUser? selectedUser;
   int? diceLieCount;
   int? selectedDiceType;
-  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived) : super();
+  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived)
+      : diceLieCount = 1,
+        super();
 
   Future<void> onInitState(BuildContext context) async {
     print("Here");
@@ -171,7 +173,7 @@ class LobbyController {
   void selectDiceType(int? selectedDiceTypeIndex) {
     HapticFeedback.selectionClick();
     print("Selected dice type: $selectedDiceTypeIndex");
-    selectedDiceType = selectedDiceType == null ? null : selectedDiceTypeIndex! + 1;
+    selectedDiceType = selectedDiceTypeIndex == null ? null : selectedDiceTypeIndex! + 1;
   }
 
   List<DropdownMenuItem<DiceUser>> get playersWithouthCurrentDropdownItems {
@@ -187,7 +189,10 @@ class LobbyController {
   bool get canAccuse => selectedUser != null && selectedDiceType != null;
 
   void accuse(AccusationType accusationType) {
-    // Navigator.of(getContext()).pop();
+    _gameRepository.sendMessage(
+      Accusation(
+          accusedPlayer: selectedUser!.id, type: accusationType, diceCount: diceLieCount, diceValue: selectedDiceType),
+    );
   }
 
   void leaveRoom() {

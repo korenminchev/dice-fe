@@ -1,3 +1,4 @@
+import 'package:dice_fe/core/domain/dice_user.dart';
 import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/core/widgets/app_bar_title.dart';
 import 'package:dice_fe/core/widgets/app_ui.dart';
@@ -78,7 +79,8 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
 
   Widget liePopupDialog(BuildContext context, AccusationType accusationType) {
     return Dialog(
-      child: Padding(
+      child: StatefulBuilder(builder: (context, setState) {
+        return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 2 * AppUI.widthUnit,
             vertical: 2 * AppUI.heightUnit,
@@ -100,7 +102,10 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
                   isExpanded: true,
                   value: controller.selectedUser,
                   items: controller.playersWithouthCurrentDropdownItems,
-                  onChanged: controller.selectLieUser,
+                  onChanged: (player) => setState(() {
+                    controller.selectLieUser(player as DiceUser);
+                    print(controller.selectedUser!.name);
+                  }),
                   hint: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: const Text("Select a player"),
@@ -120,7 +125,7 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
               step: 1,
               itemWidth: 10 * AppUI.widthUnit,
               haptics: true,
-              onChanged: (value) => controller.setDiceLieCount(value),
+              onChanged: (value) => setState(() => controller.setDiceLieCount(value)),
             ),
             SizedBox(height: 2 * AppUI.heightUnit),
             const Text(
@@ -129,40 +134,53 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
             ),
             SizedBox(height: 2 * AppUI.heightUnit),
             GridView.count(
-                childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
-                shrinkWrap: true,
-                crossAxisCount: 3,
-                crossAxisSpacing: 2 * AppUI.widthUnit,
-                mainAxisSpacing: 2 * AppUI.heightUnit,
-                controller: ScrollController(keepScrollOffset: false),
-                padding: EdgeInsets.zero,
-                children: List.generate(
-                    6,
-                    (index) => SizedBox(
-                          height: 10 * AppUI.heightUnit,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: controller.selectedDiceType != null && controller.selectedDiceType == index + 1
-                                    ? Colors.grey[600]
-                                    : null,
-                              ),
-                              height: 8 * AppUI.heightUnit,
-                              width: 8 * AppUI.widthUnit,
-                              child: GestureDetector(
-                                child: Image.asset(
-                                  "assets/images/Dice/Big/${index + 1}.png",
-                                  width: 10 * AppUI.widthUnit,
-                                ),
-                                onTap: () => controller.selectDiceType(index),
-                              )),
-                        ))),
+              childAspectRatio: AppUI.widthUnit / AppUI.heightUnit,
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 2 * AppUI.widthUnit,
+              mainAxisSpacing: 2 * AppUI.heightUnit,
+              controller: ScrollController(keepScrollOffset: false),
+              padding: EdgeInsets.zero,
+              children: List.generate(
+                6,
+                (index) => SizedBox(
+                  height: 10 * AppUI.heightUnit,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: controller.selectedDiceType != null && controller.selectedDiceType == index + 1
+                          ? Colors.grey[600]
+                          : null,
+                    ),
+                    height: 8 * AppUI.heightUnit,
+                    width: 8 * AppUI.widthUnit,
+                    child: GestureDetector(
+                      child: Image.asset(
+                        "assets/images/Dice/Big/${index + 1}.png",
+                        width: 10 * AppUI.widthUnit,
+                      ),
+                      onTap: () => setState(() {
+                        controller.selectDiceType(index);
+                        print(controller.selectedDiceType);
+                      }),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             SizedBox(height: 4 * AppUI.heightUnit),
             PrimaryButton(
               text: controller.accuseButtonText(accusationType),
-              onTap: controller.canAccuse ? () => controller.accuse(accusationType) : null,
+              onTap: controller.canAccuse
+                  ? () {
+                      controller.accuse(accusationType);
+                      Navigator.of(context).pop();
+                    }
+                  : null,
             )
-          ])),
+          ]),
+        );
+      }),
     );
   }
 
