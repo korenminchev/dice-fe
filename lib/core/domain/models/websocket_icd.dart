@@ -20,7 +20,7 @@ enum Event {
 }
 
 Map<String, Event> incomingEventMap = {
-  "round_start" : Event.roundStart,
+  "round_start": Event.roundStart,
   "game_start": Event.gameStart,
   "game_update": Event.lobbyUpdate,
   "ready_confirm": Event.readyConfirmation,
@@ -122,12 +122,7 @@ class PlayerReady extends Message {
   @JsonKey(name: 'right_player_id')
   String playerOnRightId;
 
-  PlayerReady(
-    this.ready,
-    this.playerOnLeftId,
-    this.playerOnRightId
-  ) : super(Event.playerReady);
-  
+  PlayerReady(this.ready, this.playerOnLeftId, this.playerOnRightId) : super(Event.playerReady);
 
   factory PlayerReady.fromJson(Map<String, dynamic> json) => _$PlayerReadyFromJson(json);
   @override
@@ -141,31 +136,19 @@ class ReadyConfirmation extends Message {
   bool success;
   String? error;
 
-  ReadyConfirmation(
-    this.success,
-    this.error
-  ) : super(Event.readyConfirmation);
+  ReadyConfirmation(this.success, this.error) : super(Event.readyConfirmation);
 
   factory ReadyConfirmation.fromJson(Map<String, dynamic> json) => _$ReadyConfirmationFromJson(json);
   @override
   Map<String, dynamic> toJson() => _$ReadyConfirmationToJson(this);
 }
 
-
-enum AccusationType {
-  standard,
-  exact,
-  paso
-}
+enum AccusationType { standard, exact, paso }
 
 @JsonSerializable()
 class Accusation extends Message {
-  Accusation({
-    required this.accusedPlayer,
-    required this.type,
-    this.diceCount,
-    this.diceValue
-  }) : super(Event.accusation);
+  Accusation({required this.accusedPlayer, required this.type, this.diceCount, this.diceValue})
+      : super(Event.accusation);
 
   @JsonKey(name: 'event')
   String eventString = "accusation";
@@ -176,7 +159,7 @@ class Accusation extends Message {
   int? diceValue;
   @JsonKey(name: "dice_count")
   int? diceCount;
-  
+
   factory Accusation.fromJson(Map<String, dynamic> json) => _$AccusationFromJson(json);
   @override
   Map<String, dynamic> toJson() => _$AccusationToJson(this);
@@ -191,13 +174,13 @@ List<DiceUser> _playersFromJson(String? json) {
 
 @JsonSerializable()
 class RoundEnd extends Message {
-  RoundEnd({
-    required this.winner,
-    required this.loser,
-    required this.correctAccusation,
-    required this.accusationType,
-    required this.players
-  }) : super(Event.none);
+  RoundEnd(
+      {required this.winner,
+      required this.loser,
+      required this.correctAccusation,
+      required this.accusationType,
+      required this.players})
+      : super(Event.roundEnd);
 
   @JsonKey(name: 'event')
   String eventString = "round_end";
@@ -215,7 +198,6 @@ class RoundEnd extends Message {
   int? jokerCount;
   @JsonKey(name: "players", fromJson: _playersFromJson)
   List<DiceUser> players;
-  
 
   factory RoundEnd.fromJson(Map<String, dynamic> json) => _$RoundEndFromJson(json);
   @override

@@ -48,3 +48,4 @@ app.*.map.json
 
 # Firebase
 *.cache
+.fvm/flutter_sdk

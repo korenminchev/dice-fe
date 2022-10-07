@@ -8,6 +8,7 @@ import 'package:dice_fe/features/game/app/pages/lobby/lobby_controller.dart';
 import 'package:dice_fe/features/game/app/widgets/error_text.dart';
 import 'package:dice_fe/features/game/app/widgets/player_list.dart';
 import 'package:dice_fe/features/game/app/widgets/ready_button.dart';
+import 'package:dice_fe/features/game/app/widgets/round_end_player_dice.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
 import 'package:dice_fe/features/game/injection_container.dart';
 import 'package:dice_fe/features/home/pages/home_page.dart';
@@ -26,7 +27,7 @@ class NewLobbyPage extends StatefulWidget {
 
 class _NewLobbyPageState extends State<NewLobbyPage> {
   late LobbyController controller =
-      LobbyController(widget.roomCode, serviceLocator<GameRepository>(), onCriticalError, setState);
+      LobbyController(widget.roomCode, serviceLocator<GameRepository>(), onCriticalError, setState, onRoundEnd);
   bool isLoading = true;
 
   @override
@@ -47,6 +48,82 @@ class _NewLobbyPageState extends State<NewLobbyPage> {
   Future<void> initializeController() async {}
 
   void onCriticalError(String message) async {}
+
+  void onRoundEnd(RoundEnd roundEnd) {
+    String winnerName = roundEnd.players.firstWhere((player) => player.id == roundEnd.winner).name;
+    List<Widget> widgets = [];
+
+    switch (roundEnd.accusationType) {
+      case AccusationType.standard:
+      case AccusationType.exact:
+        widgets.add(Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Total ",
+              style: TextStyle(fontSize: 20),
+            ),
+            Image.asset("assets/images/Dice/Big/1.png", width: 24),
+            if (roundEnd.diceValue != 1) ...[
+              const Text(
+                " + ",
+                style: TextStyle(fontSize: 20),
+              ),
+              Image.asset("assets/images/Dice/Big/${roundEnd.diceValue}.png", width: 24),
+            ],
+            const Text(
+              " :",
+              style: TextStyle(fontSize: 20),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2 * AppUI.widthUnit),
+              child: Text(
+                "${roundEnd.diceCount! + roundEnd.jokerCount!}",
+                style: const TextStyle(fontSize: 20),
+              ),
+            )
+          ],
+        ));
+        widgets.add(SizedBox(height: 3 * AppUI.heightUnit));
+        widgets.add(GridView.count(
+            childAspectRatio: AppUI.widthUnit / (AppUI.heightUnit * 1.5),
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            children: roundEnd.players
+                .map((player) => RoundEndPlayerDice(
+                      name: player.name,
+                      jokerCount: player.dice!.where((dice) => dice == 1).length,
+                      diceValue: roundEnd.diceValue!,
+                      diceCount: player.dice!.where((dice) => dice == roundEnd.diceValue).length,
+                    ))
+                .toList()));
+        break;
+
+      default:
+        break;
+    }
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+              child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 2 * AppUI.widthUnit,
+                    vertical: 2 * AppUI.heightUnit,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        winnerName + " Won",
+                        style: const TextStyle(fontSize: 38, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 2 * AppUI.heightUnit),
+                      ...widgets
+                    ],
+                  )));
+        });
+  }
 
   Widget buildExitConfirmationDialog(BuildContext context) {
     return AlertDialog(

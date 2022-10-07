@@ -14,6 +14,7 @@ class LobbyController {
   final String roomCode;
   Function(String) onCriticalError;
   void Function(void Function()) onMessageReceived;
+  void Function(RoundEnd) onRoundEnd;
   List<DiceUser> players = [];
   DiceUser? currentPlayer;
   DiceUser? leftPlayer;
@@ -32,7 +33,7 @@ class LobbyController {
   DiceUser? selectedUser;
   int? diceLieCount;
   int? selectedDiceType;
-  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived)
+  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived, this.onRoundEnd)
       : diceLieCount = 1,
         super();
 
@@ -128,6 +129,11 @@ class LobbyController {
           currentPlayerDice = message.dice.toList()..sort();
           break;
 
+        case Event.roundEnd:
+          print("Round End");
+          onRoundEnd(message as RoundEnd);
+          break;
+
         default:
           break;
       }
@@ -193,6 +199,8 @@ class LobbyController {
       Accusation(
           accusedPlayer: selectedUser!.id, type: accusationType, diceCount: diceLieCount, diceValue: selectedDiceType),
     );
+    selectedUser = null;
+    selectedDiceType = null;
   }
 
   void leaveRoom() {
