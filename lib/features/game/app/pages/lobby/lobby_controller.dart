@@ -4,11 +4,8 @@ import 'package:dice_fe/core/domain/models/websocket_icd.dart';
 import 'package:dice_fe/features/create_user/app/pages/create_user_page.dart';
 import 'package:dice_fe/features/game/domain/models/player_picker_side.dart';
 import 'package:dice_fe/features/game/domain/repositories/game_repository.dart';
-import 'package:dice_fe/features/home/pages/home_page.dart';
-import 'package:dice_fe/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_clean_architecture/flutter_clean_architecture.dart';
 
 class LobbyController {
   final String roomCode;
@@ -20,7 +17,8 @@ class LobbyController {
   DiceUser? leftPlayer;
   DiceUser? rightPlayer;
   bool userReady = false;
-  GameRules rules = GameRules(exactAllowed: true, pasoAllowed: true, initialDiceCount: 5);
+  GameRules rules =
+      GameRules(exactAllowed: true, pasoAllowed: true, initialDiceCount: 5);
   bool readyLoading = false;
   Function()? onReady;
   late final Stream _websocketStream;
@@ -33,7 +31,8 @@ class LobbyController {
   DiceUser? selectedUser;
   int? diceLieCount;
   int? selectedDiceType;
-  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError, this.onMessageReceived, this.onRoundEnd)
+  LobbyController(this.roomCode, this._gameRepository, this.onCriticalError,
+      this.onMessageReceived, this.onRoundEnd)
       : diceLieCount = 1,
         super();
 
@@ -41,7 +40,7 @@ class LobbyController {
     print("Here");
     bool codeValid = false;
     // Check if user is logged in
-    final logedInResult = _gameRepository.isUserLoggedIn();
+    final logedInResult = await _gameRepository.isUserLoggedIn();
     await logedInResult.fold(
       (failure) async {
         await Navigator.pushNamed(context, CreateUserPage.routeName,
@@ -179,15 +178,19 @@ class LobbyController {
   void selectDiceType(int? selectedDiceTypeIndex) {
     HapticFeedback.selectionClick();
     print("Selected dice type: $selectedDiceTypeIndex");
-    selectedDiceType = selectedDiceTypeIndex == null ? null : selectedDiceTypeIndex! + 1;
+    selectedDiceType =
+        selectedDiceTypeIndex == null ? null : selectedDiceTypeIndex! + 1;
   }
 
   List<DropdownMenuItem<DiceUser>> get playersWithouthCurrentDropdownItems {
-    List<DiceUser> playersWithouthCurrentPlayer = players.where((player) => player.id != currentPlayer!.id).toList();
+    List<DiceUser> playersWithouthCurrentPlayer =
+        players.where((player) => player.id != currentPlayer!.id).toList();
     return playersWithouthCurrentPlayer.map((player) {
       return DropdownMenuItem(
         value: player,
-        child: Container(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(player.name)),
+        child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(player.name)),
       );
     }).toList();
   }
@@ -197,7 +200,10 @@ class LobbyController {
   void accuse(AccusationType accusationType) {
     _gameRepository.sendMessage(
       Accusation(
-          accusedPlayer: selectedUser!.id, type: accusationType, diceCount: diceLieCount, diceValue: selectedDiceType),
+          accusedPlayer: selectedUser!.id,
+          type: accusationType,
+          diceCount: diceLieCount,
+          diceValue: selectedDiceType),
     );
     selectedUser = null;
     selectedDiceType = null;
@@ -224,6 +230,7 @@ class LobbyController {
   void onReadyClicked() async {
     readyLoading = true;
     onMessageReceived(() {});
-    _gameRepository.sendMessage(PlayerReady(!userReady, currentPlayer!.id, currentPlayer!.id));
+    _gameRepository.sendMessage(
+        PlayerReady(!userReady, currentPlayer!.id, currentPlayer!.id));
   }
 }

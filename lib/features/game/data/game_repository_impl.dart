@@ -16,11 +16,17 @@ class GameRepositoryImpl extends GameRepository {
   GameRepositoryImpl(this._backend, this._authorizationRepository);
 
   @override
-  Either<Failure, DiceUser> isUserLoggedIn() {
+  Future<Either<Failure, DiceUser>> isUserLoggedIn() async {
     final loginResult = _authorizationRepository.getUser();
     return loginResult.fold(
       (failure) => Left(failure),
-      (user) => Right(user),
+      (user) async {
+        final userExistsResult = await _backend.userExists(user.id);
+        return userExistsResult.fold(
+          (failure) => Left(failure),
+          (valid) => valid ? Right(user) : Left(Failure())
+        );
+      },
     );
   }
 

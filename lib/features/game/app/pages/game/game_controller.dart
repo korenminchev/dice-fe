@@ -17,7 +17,7 @@ class GameController extends Controller {
   @override
   void onInitState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final logedInResult = _gameRepository.isUserLoggedIn();
+      final logedInResult = await _gameRepository.isUserLoggedIn();
       await logedInResult.fold(
         (failure) async {
             onCriticalError("Error joining game");

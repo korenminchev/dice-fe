@@ -118,6 +118,14 @@ class DiceBackend {
     });
   }
 
+  Future<Either<ServerFailure, bool>> userExists(String userId) async {
+    final response = await _get("users/$userId");
+    return response.fold(
+      (failure) => Left(failure),
+      (response) => const Right(true)
+    );
+  }
+
   Future<Either<ServerFailure, bool>> isPlayerInGame(String roomCode, String playerId) async {
     final response = await _get("games/$roomCode/$playerId");
     return response.fold((failure) => Left(failure), (response) {

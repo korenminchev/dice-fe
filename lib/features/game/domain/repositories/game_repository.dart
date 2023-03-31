@@ -12,7 +12,7 @@ Map<String, GameProgression> gameProgressionFromString = {
 
 abstract class GameRepository {
   GameRepository();
-  Either<Failure, DiceUser> isUserLoggedIn();
+  Future<Either<Failure, DiceUser>> isUserLoggedIn();
   Future<Either<Failure, bool>> isRoomCodeValid(String roomCode, String playerId);
   Future<Either<Failure, bool>> isPlayerInGame(String roomCode, String playerId);
   Future<Either<Failure, Stream>> joinRoom(String roomCode);

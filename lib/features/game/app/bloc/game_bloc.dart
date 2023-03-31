@@ -29,7 +29,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _onVerifyParams(VerifyParams event, Emitter<GameState> emit) async {
     bool codeValid = false;
     // Check if user is logged in
-    final logedInResult = _gameRepository.isUserLoggedIn();
+    final logedInResult = await _gameRepository.isUserLoggedIn();
     logedInResult.fold(
       (failure) async {
         emit(GameUserNotLoggedIn());
